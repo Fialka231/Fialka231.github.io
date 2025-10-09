@@ -180,7 +180,7 @@
     ];
 
     // doplň svou URL z Apps Scriptu nebo jiné služby pro příjem odpovědí
-    const postEndpoint = 'https://script.google.com/macros/s/AKfycbxtNzx4zJvYzQuw1gplSZaoduXdR-h0EaKwA-D4Jtw8yAhB1tojM4U6lpS650M_j3hW/exec';
+    const postEndpoint = 'https://script.google.com/macros/s/AKfycbynIoASM-pFeChMZqUaeOpcvtTobEbCY_2CQrdcCLgm8G2nizIMfoSPILclbH-vVe1q/exec';
 
     const state = { index: 0, answers: {}, done: false, meta: null, version: SURVEY_VERSION };
     const els = {
@@ -369,21 +369,32 @@
       els.save.disabled = false;
     }
 
-    async function submit() {
-      const payload = buildPayload();
-      if (postEndpoint) {
-        try {
-          await fetch(postEndpoint, {
-            method: 'POST',
-            body: JSON.stringify(payload)
-          });
-        } catch (e) {
-          console.error('POST failed', e);
-        }
-      }
-      state.done = true;
-      render();
+async function submit() {
+  const payload = buildPayload();
+  const body = JSON.stringify(payload);
+
+  try {
+    // Simple request to avoid preflight; no headers
+    await fetch(postEndpoint, { method: 'POST', body });
+    // We deliberately don't read res.json() to avoid CORS read issues
+  } catch (err) {
+    // Fallback that does not care about CORS
+    const ok = typeof navigator.sendBeacon === 'function'
+      ? navigator.sendBeacon(postEndpoint, new Blob([body], { type: 'text/plain' }))
+      : false;
+
+    if (!ok) {
+      console.error('Both fetch and beacon failed', err);
+      toast('Nepodařilo se potvrdit odeslání. Zkontrolujte prosím připojení.');
+      // We can still proceed, because server may have accepted the POST
     }
+  }
+
+  // Show the thank-you screen regardless (server already wrote to Sheet)
+  state.done = true;
+  render();
+}
+
 
     function buildPayload() {
       const answers = {};
