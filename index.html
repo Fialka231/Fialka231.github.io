@@ -375,7 +375,6 @@
         try {
           await fetch(postEndpoint, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
           });
         } catch (e) {
