@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ecovis Facta a.s. – Dotazník pro poptávku</title>
+  <style>
+    :root {
+      --brand: #c8102e;
+      --bg: #ffffff;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --accent: #c8102e;
+      --error: #ef4444;
+      --bg-image: '';
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: linear-gradient(180deg, #ffffff 0%, #f7f7f7 100%);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: var(--bg-image);
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: right bottom;
+      opacity: 0.15;
+      pointer-events: none;
+      filter: saturate(1.05);
+    }
+    .container { width: 100%; max-width: 900px; }
+    .card {
+      background:
+        radial-gradient(1200px 400px at 10% 0%, rgba(200,16,46,0.08) 0%, rgba(200,16,46,0) 40%),
+        radial-gradient(1000px 400px at 100% 10%, rgba(200,16,46,0.06) 0%, rgba(200,16,46,0) 50%),
+        var(--card);
+      color: #111827;
+      border: 2px solid rgba(200,16,46,0.20);
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      padding: 24px;
+    }
+    header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+    header img.logo { height: 38px; width: auto; border-radius: 8px; }
+    .brand-title { font-size: 18px; color: var(--muted); }
+    .title { font-size: 28px; font-weight: 800; letter-spacing: 0.2px; margin: 8px 0 0 0; color: #111827; }
+    .subtitle { margin-top: 4px; color: var(--muted); font-size: 14px; }
+    .progress { background: #f1f5f9; height: 10px; border-radius: 999px; overflow: hidden; margin: 16px 0 8px 0; border: 1px solid #e5e7eb; }
+    .bar { height: 100%; background: linear-gradient(90deg, #c8102e, #a50f27); width: 0%; transition: width 200ms ease; }
+    .progress-meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; }
+    .q-card { margin-top: 16px; padding: 18px; border-radius: 14px; border: 1px solid #e5e7eb; background: #ffffff; }
+    .q-prompt { font-size: 18px; font-weight: 700; margin: 0 0 8px 0; color: #111827; }
+    .q-image { width: 100%; max-height: 260px; object-fit: cover; border-radius: 12px; border: 1px solid #e5e7eb; margin: 10px 0; }
+    .options { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 8px; }
+    .option { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 12px; border: 1px solid #e5e7eb; background: #fafafa; cursor: pointer; }
+    .option:hover { background: #f5f5f5; }
+    .badge { font-weight: 800; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 8px; background: rgba(200,16,46,0.12); border: 1px solid rgba(200,16,46,0.35); color: #7a0b1f; }
+    .textarea { width: 100%; min-height: 140px; padding: 12px; border-radius: 12px; background: #fafafa; color: #111827; border: 1px solid #e5e7eb; }
+    .textarea::placeholder { color: #94a3b8; }
+    .error { color: var(--error); font-size: 13px; margin-top: 6px; }
+    .nav { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; gap: 12px; }
+    .btn { background: linear-gradient(180deg, #ffffff, #fafafa); color: #111827; border: 1px solid #e5e7eb; padding: 10px 16px; border-radius: 12px; cursor: pointer; font-weight: 700; }
+    .btn.primary { background: linear-gradient(180deg, #c8102e, #a50f27); color: #fff; border-color: #b91c1c; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    footer { margin-top: 20px; color: #6b7280; font-size: 12px; text-align: center; }
+    .hidden { display: none; }
+    @media (max-width: 520px) { .title { font-size: 22px; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card" id="app">
+      <header>
+        <img class="logo" id="logo" alt="Company logo" />
+        <div>
+          <div class="brand-title" id="brandName">Ecovis Facta a.s.</div>
+          <h1 class="title">Dotazník pro poptávku služeb</h1>
+          <div class="subtitle">Odpovědi nám pomohou připravit Vaši nabídku.</div>
+        </div>
+      </header>
+
+      <div class="progress" aria-label="Postup">
+        <div class="bar" id="bar"></div>
+      </div>
+      <div class="progress-meta"><span id="progressText">0 z 0</span><span id="percent">0%</span></div>
+
+      <div id="questionMount"></div>
+
+      <div class="nav">
+        <button class="btn" id="backBtn">Zpět</button>
+        <div style="display:flex; gap:8px;">
+          <button class="btn" id="saveBtn" title="Uložit postup do tohoto prohlížeče">Uložit</button>
+          <button class="btn primary" id="nextBtn">Další</button>
+        </div>
+      </div>
+
+      <footer>
+        Pokračováním souhlasíte se zpracováním pro účely vyřízení Vaší poptávky. 
+      </footer>
+    </div>
+  </div>
+
+  <!-- Multiple choice template -->
+  <template id="mc-template">
+    <div class="q-card" role="group" aria-labelledby="prompt">
+      <p class="q-prompt" id="prompt"></p>
+      <img class="q-image hidden" id="qimg" alt="Ilustrační obrázek" />
+      <ul class="options" id="options"></ul>
+      <div class="error hidden" data-role="err">Tato otázka je povinná</div>
+    </div>
+  </template>
+
+  <!-- Text answer template -->
+  <template id="text-template">
+    <div class="q-card" role="group" aria-labelledby="prompt">
+      <p class="q-prompt" id="prompt"></p>
+      <img class="q-image hidden" id="qimg" alt="Ilustrační obrázek" />
+      <textarea class="textarea" id="textInput" placeholder="Odpověď napište sem..."></textarea>
+      <div class="error hidden" data-role="err">Tato otázka je povinná</div>
+    </div>
+  </template>
+
+  <!-- Done template simplified as requested -->
+  <template id="done-template">
+    <div class="q-card">
+      <h2 class="q-prompt">Děkujeme za vyplnění. O nabídce Vás budeme informovat co nejdříve.</h2>
+    </div>
+  </template>
+
+  <script>
+    const SURVEY_VERSION = 'v1.2';
+    const brandName = "Ecovis Facta a.s.";
+    const logoUrl = "https://static.wixstatic.com/media/da1e67_0875863cd96b4dfaabfd81fa161c0af6~mv2.png";
+    const backgroundImages = [];
+
+    const questions = [
+      {"id":"nazev_spolecnosti","prompt":"Název společnosti","type":"text","options":null},
+      {"id":"predmet_cinnosti","prompt":"Předmět činnosti společnosti","type":"text","options":null},
+      {"id":"obrat_minuly_rok","prompt":"Obrat za předchozí rok (je li znám)","type":"text","options":null},
+      {"id":"pocet_zapisu_denik","prompt":"Průměrný měsíční počet zápisů v účetním deníku za minulý rok","type":"text","options":null},
+      {"id":"ucetni_sw","prompt":"Pokud máte vlastní účetní SW, jaký","type":"text","options":null},
+      {"id":"ucetovani_skladu","prompt":"Jaký máte způsob účtování skladů (metoda A,B v CZ)","type":"mc","options":["nemáme","metoda A","metoda B"]},
+      {"id":"pohyb_sklad","prompt":"Pohyb skladových položek (zboží, výrobky, materiál)","type":"text","options":null},
+      {"id":"pocet_prijatych","prompt":"Počet přijatých faktur účtenek","type":"text","options":null},
+      {"id":"pocet_vydanych","prompt":"Počet vydaných faktur","type":"text","options":null},
+      {"id":"pocet_pokladen","prompt":"Počet pokladen celkem","type":"text","options":null},
+      {"id":"pocet_dhm","prompt":"Počet dlouhodobého hmotného majetku","type":"text","options":null},
+      {"id":"pocet_leasing","prompt":"Počet pronajatého majetku formou leasingu","type":"text","options":null},
+      {"id":"pocet_uveru","prompt":"Počet bankovních úvěrů a ostatních půjček","type":"text","options":null},
+      {"id":"pocet_uctu","prompt":"Počet bankovních účtů celkem","type":"text","options":null},
+      {"id":"doba_na_trhu","prompt":"Jak dlouho společnost působí na trhu","type":"text","options":null},
+      {"id":"zdan_obdobi","prompt":"Zdaňovací období","type":"mc","options":["kalendářní","hospodářský"]},
+      {"id":"zamestnanci","prompt":"Máte zaměstnance","type":"mc","options":["ANO","NE"]},
+      {"id":"pocet_zam","prompt":"Počet zaměstnanců (průměrný měsíční počet)","type":"text","options":null},
+      {"id":"vydaje_typ","prompt":"Vykazujete paušální nebo nepaušální výdaje","type":"mc","options":["paušální","nepaušální"]},
+      {"id":"registrace_dph","prompt":"Registrace k DPH","type":"mc","options":["NE","měsíční","kvartální"]},
+      {"id":"souhrnne_hlaseni","prompt":"Souhrnné hlášení k DPH","type":"mc","options":["ANO","NE"]},
+      {"id":"kontrolni_hlaseni","prompt":"Kontrolní hlášení k DPH","type":"mc","options":["ANO","NE"]},
+      {"id":"odpisy","prompt":"Opotřebení majetku (odpisy)","type":"text","options":null},
+      {"id":"zapujcky","prompt":"Zápůjčky společníků majitelů","type":"text","options":null},
+      {"id":"zahranicni_obchody","prompt":"Zahraniční obchody","type":"mc","options":["ANO","NE"]},
+      {"id":"nakup_eu","prompt":"Nákup z Evropské unie","type":"mc","options":["ANO","NE"]},
+      {"id":"prodej_eu","prompt":"Prodej do Evropské unie","type":"mc","options":["ANO","NE"]},
+      {"id":"nakup_mimo_eu","prompt":"Nákup mimo Evropskou unii (dovoz)","type":"mc","options":["ANO","NE"]},
+      {"id":"prodej_mimo_eu","prompt":"Prodej mimo Evropskou unii (vývoz)","type":"mc","options":["ANO","NE"]},
+      {"id":"ostatni","prompt":"Ostatní co jsme se nezeptali a je důležité","type":"text","options":null}
+    ];
+
+    // doplň svou URL z Apps Scriptu nebo jiné služby pro příjem odpovědí
+    const postEndpoint = 'https://script.google.com/macros/s/AKfycbw0dOTkLE0lCTarGAm13OxmvOdEyX6L_a4epEWAEUMkdZfd0ESDhQIKcpOwWw5L4Vw6/exec';
+
+    const state = { index: 0, answers: {}, done: false, meta: null, version: SURVEY_VERSION };
+    const els = {
+      logo: document.getElementById('logo'),
+      brandName: document.getElementById('brandName'),
+      bar: document.getElementById('bar'),
+      progressText: document.getElementById('progressText'),
+      percent: document.getElementById('percent'),
+      qMount: document.getElementById('questionMount'),
+      back: document.getElementById('backBtn'),
+      next: document.getElementById('nextBtn'),
+      save: document.getElementById('saveBtn')
+    };
+
+    function init() {
+      els.logo.src = logoUrl;
+      els.brandName.textContent = brandName;
+
+      els.back.addEventListener('click', onBack);
+      els.next.addEventListener('click', onNext);
+      els.save.addEventListener('click', onSave);
+
+      const params = new URLSearchParams(location.search);
+      state.meta = {
+        customer: params.get('customer') || null,
+        id: params.get('id') || null,
+        email: params.get('email') || null,
+        token: params.get('t') || null
+      };
+
+      if (backgroundImages && backgroundImages.length) {
+        const chosen = backgroundImages[Math.floor(Math.random() * backgroundImages.length)];
+        document.documentElement.style.setProperty('--bg-image', `url('${chosen}')`);
+      }
+
+      const wantResume = params.get('resume') === '1';
+      const saved = loadSaved();
+      if (wantResume && saved && saved.version === SURVEY_VERSION && Number.isInteger(saved.index) && saved.index >= 0 && saved.index < questions.length) {
+        Object.assign(state, saved);
+      } else {
+        state.index = 0;
+        state.done = false;
+        state.answers = {};
+        state.version = SURVEY_VERSION;
+      }
+      render();
+    }
+
+    function onBack() {
+      if (state.index > 0) {
+        state.index--;
+        render();
+      }
+    }
+
+    async function onNext() {
+      if (state.done) return restart();
+      if (!validateCurrent()) return;
+      if (state.index < questions.length - 1) {
+        state.index++;
+        render();
+      } else {
+        await submit();
+      }
+    }
+
+    function onSave() {
+      localStorage.setItem('surveyState', JSON.stringify(state));
+      toast('Postup uložen do tohoto prohlížeče');
+    }
+
+    function loadSaved() {
+      try { return JSON.parse(localStorage.getItem('surveyState')); } catch { return null; }
+    }
+
+    function restart() {
+      localStorage.removeItem('surveyState');
+      state.index = 0;
+      state.answers = {};
+      state.done = false;
+      state.version = SURVEY_VERSION;
+      render();
+    }
+
+    function validateCurrent() {
+      const q = questions[state.index];
+      const val = state.answers[q.id];
+      const ok = q.type === 'text' ? !!(val && String(val).trim()) : val !== undefined;
+      const err = els.qMount.querySelector('[data-role="err"]');
+      if (err) err.classList.toggle('hidden', ok);
+      return ok;
+    }
+
+    function setProgress() {
+      const total = questions.length;
+      const pct = Math.round((Math.min(state.index + 1, total) / total) * 100);
+      els.bar.style.width = pct + '%';
+      els.progressText.textContent = `${Math.min(state.index + 1, total)} z ${total}`;
+      els.percent.textContent = pct + '%';
+    }
+
+    function render() {
+      setProgress();
+
+      const mount = els.qMount;
+      mount.innerHTML = '';
+
+      if (state.done) {
+        const tpl = document.getElementById('done-template').content.cloneNode(true);
+        mount.appendChild(tpl);
+
+        // skryj navigaci v dokončeném stavu
+        els.back.style.display = 'none';
+        els.next.style.display = 'none';
+        els.save.style.display = 'none';
+        return;
+      } else {
+        // při běžném průchodu zviditelni navigaci
+        els.back.style.display = '';
+        els.next.style.display = '';
+        els.save.style.display = '';
+      }
+
+      els.back.disabled = state.index === 0;
+      els.next.textContent = state.index === questions.length - 1 ? 'Odeslat' : 'Další';
+
+      const q = questions[state.index];
+      const value = state.answers[q.id];
+
+      if (q.type === 'mc' && q.options && q.options.length) {
+        const tpl = document.getElementById('mc-template').content.cloneNode(true);
+        tpl.getElementById('prompt').textContent = q.prompt;
+        const img = tpl.getElementById('qimg');
+        if (q.image) { img.src = q.image; img.classList.remove('hidden'); }
+        const ul = tpl.getElementById('options');
+        ul.innerHTML = '';
+
+        q.options.forEach((opt, i) => {
+          const li = document.createElement('li');
+          li.className = 'option';
+
+          const input = document.createElement('input');
+          input.type = 'radio';
+          input.name = q.id;
+          input.value = String(i);
+          input.checked = value === i;
+          input.setAttribute('aria-label', String.fromCharCode(65 + i) + '. ' + opt);
+          input.addEventListener('change', () => {
+            state.answers[q.id] = i;
+            els.next.disabled = false;
+          });
+
+          const badge = document.createElement('div');
+          badge.className = 'badge';
+          badge.textContent = String.fromCharCode(65 + i);
+
+          const label = document.createElement('label');
+          label.textContent = opt;
+          label.style.flex = '1';
+
+          li.addEventListener('click', () => { input.checked = true; input.dispatchEvent(new Event('change')); });
+
+          li.appendChild(badge);
+          li.appendChild(input);
+          li.appendChild(label);
+          ul.appendChild(li);
+        });
+
+        mount.appendChild(tpl);
+      } else {
+        const tpl = document.getElementById('text-template').content.cloneNode(true);
+        tpl.getElementById('prompt').textContent = q.prompt;
+        const img = tpl.getElementById('qimg');
+        if (q.image) { img.src = q.image; img.classList.remove('hidden'); }
+        const ta = tpl.getElementById('textInput');
+        ta.value = value || '';
+        ta.addEventListener('input', (e) => {
+          state.answers[q.id] = e.target.value;
+          els.next.disabled = !(e.target.value && String(e.target.value).trim());
+        });
+        mount.appendChild(tpl);
+      }
+
+      const hasValue = q.type === 'text' ? !!(value && String(value).trim()) : value !== undefined;
+      els.next.disabled = !hasValue;
+      els.save.disabled = false;
+    }
+
+    async function submit() {
+      const payload = buildPayload();
+      if (postEndpoint) {
+        try {
+          await fetch(postEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        } catch (e) {
+          console.error('POST failed', e);
+        }
+      }
+      state.done = true;
+      render();
+    }
+
+    function buildPayload() {
+      const answers = {};
+      for (const q of questions) {
+        let val = state.answers[q.id];
+        if (q.type === 'mc' && Number.isInteger(val)) {
+          val = { index: val, option: q.options[val] };
+        }
+        answers[q.id] = val ?? null;
+      }
+      return {
+        brand: brandName,
+        version: SURVEY_VERSION,
+        timestamp: new Date().toISOString(),
+        meta: state.meta || null,
+        answers
+      };
+    }
+
+    function toast(msg) {
+      const el = document.createElement('div');
+      el.textContent = msg;
+      el.style.position = 'fixed';
+      el.style.bottom = '24px';
+      el.style.left = '50%';
+      el.style.transform = 'translateX(-50%)';
+      el.style.background = 'rgba(17,24,39,0.9)';
+      el.style.border = '1px solid rgba(255,255,255,0.12)';
+      el.style.color = 'white';
+      el.style.padding = '10px 14px';
+      el.style.borderRadius = '12px';
+      el.style.boxShadow = '0 8px 24px rgba(0,0,0,0.35)';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1800);
+    }
+
+    init();
+  </script>
+</body>
+</html>
