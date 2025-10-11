@@ -179,21 +179,22 @@
       { id:"q13", prompt:"Počet položek pronajatého majetku formou leasingu", type:"text" },
       { id:"q14", prompt:"Počet bankovních úvěrů a ostatních půjček", type:"text" },
       { id:"q15", prompt:"Která banka je hlavní banka?", type:"text" },
-      { id:"q16", prompt:"Máte účty i v zahraniční měně?", type:"text" },
-      { id:"q17", prompt:"Počet bankovních účtů celkem", type:"text" },
+      { id:"q16", prompt:"Máte účty i v zahraniční měně?", type:"mc", options: ["Ano", "Ne"] },
+      { id:"q17", prompt:"Ve které?", type:"text", hiddenWhen:[ { type:"mcEquals", questionId:"q16", index:1 } ] },
+      { id:"q18", prompt:"Počet bankovních účtů celkem", type:"text" },
 
-      { id:"q18", prompt:"Kolik máte zaměstnanců průměrně měsíčně?", type:"text" },
-      { id:"q19", prompt:"Máte vysokou fluktuaci (nástupy a výstupy každý měsíc)?", type:"text" },
-      { id:"q20", prompt:"Zaměstnáváte cizince?", type:"mc", options:["ANO","NE"] },
-      { id:"q21", prompt:"Kdo připravuje pracovní smlouvy a podklady pro zpracování mezd?", type:"text" },
+      { id:"q19", prompt:"Kolik máte zaměstnanců průměrně měsíčně?", type:"text" },
+      { id:"q20", prompt:"Máte vysokou fluktuaci (nástupy a výstupy každý měsíc)?", type:"text" },
+      { id:"q21", prompt:"Zaměstnáváte cizince?", type:"mc", options:["ANO","NE"] },
+      { id:"q22", prompt:"Kdo připravuje pracovní smlouvy a podklady pro zpracování mezd?", type:"text" },
 
-      { id:"q22", prompt:"Registrace k DPH", type:"text" },
-      { id:"q23", prompt:"Podáváte Intrastat?", type:"mc", options:["ANO","NE"] },
-      { id:"q24", prompt:"Podáváte statistická hlášení?", type:"mc", options:["NE","měsíčně","kvartálně","ročně"] },
-      { id:"q25", prompt:"Podléháte povinému auditu?", type:"mc", options:["ANO","NE"] },
-      { id:"q26", prompt:"Vyžadujete zpracování a vyhodnocování reportů?", type:"mc", options:["NE","měsíčně","kvartálně","ročně"] },
+      { id:"q23", prompt:"Registrace k DPH", type:"mc", options: ["ANO","NE"] },
+      { id:"q24", prompt:"Podáváte Intrastat?", type:"mc", options:["ANO","NE"] },
+      { id:"q25", prompt:"Podáváte statistická hlášení?", type:"mc", options:["NE","měsíčně","kvartálně","ročně"] },
+      { id:"q26", prompt:"Podléháte povinému auditu?", type:"mc", options:["ANO","NE"] },
+      { id:"q27", prompt:"Vyžadujete zpracování a vyhodnocování reportů?", type:"mc", options:["NE","měsíčně","kvartálně","ročně"] },
 
-      { id:"q27", prompt:"Další informace a požadavky na účetní a daňové služby", type:"text" }
+      { id:"q28", prompt:"Další informace a požadavky na účetní a daňové služby", type:"text" }
     ];
 
     const postEndpoint = 'https://script.google.com/macros/s/AKfycbzjRyNIs_8VlPHPT3ZUy1Ns9e4q9jEn_6a0xB6lapIPiMOSehpetLcKnBZeXqjwag/exec';
