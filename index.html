@@ -450,25 +450,40 @@
       els.next.disabled = !validateCurrent();
     }
 
-    async function submit() {
+      async function submit() {
+      // guard: prevent double-clicks during submission
+      els.next.disabled = true;
+    
       const payload = buildPayload();
+      // add a client idempotency key
+      payload.meta = payload.meta || {};
+      payload.meta.idempotency_key = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random();
+    
       const body = JSON.stringify(payload);
-
+    
       try {
-        await fetch(postEndpoint, { method: 'POST', body });
+        // make a "simple request" that won't preflight
+        const res = await fetch(postEndpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body
+        });
+    
+        // Even if CORS prevents reading JSON, the request has been sent.
+        // So DO NOT retry with sendBeacon here.
+    
+        // Optional: if you can read it, check .ok
+        // if (!res.ok) console.warn('Server returned non-2xx', res.status);
       } catch (err) {
-        const ok = typeof navigator.sendBeacon === 'function'
-          ? navigator.sendBeacon(postEndpoint, new Blob([body], { type: 'text/plain' }))
-          : false;
-        if (!ok) {
-          console.error('Both fetch and beacon failed', err);
-          toast('Nepodařilo se potvrdit odeslání. Zkontrolujte prosím připojení.');
-        }
+        // Log only; don't retry blindly (prevents duplicate submissions)
+        console.warn('Fetch failed (likely CORS). Not retrying to avoid duplicates.', err);
       }
-
+    
       state.done = true;
       render();
     }
+
+    
 
     function buildPayload() {
       const answers = {};
