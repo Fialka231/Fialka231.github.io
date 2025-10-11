@@ -1,4 +1,5 @@
-<!doctype html>
+<!DOCTYPE html>
+</html><!doctype html>
 <html lang="cs">
 <head>
   <meta charset="utf-8" />
@@ -108,7 +109,7 @@
       </div>
 
       <footer>
-        Pokračováním souhlasíte se zpracováním pro účely vyřízení Vaší poptávky. 
+        Pokračováním souhlasíte se zpracováním pro účely vyřízení Vaší poptávky.
       </footer>
     </div>
   </div>
@@ -133,7 +134,19 @@
     </div>
   </template>
 
-  <!-- Done template simplified as requested -->
+  <!-- Combo: radio OR text (mutually exclusive) -->
+  <template id="mc-or-text-template">
+    <div class="q-card" role="group" aria-labelledby="prompt">
+      <p class="q-prompt" id="prompt"></p>
+      <img class="q-image hidden" id="qimg" alt="Ilustrační obrázek" />
+      <ul class="options" id="options" style="margin-bottom:10px;"></ul>
+      <input class="textarea" id="comboInput" placeholder="(nebo napište text)..."
+             style="min-height:44px; height:44px; padding:10px;"></input>
+      <div class="error hidden" data-role="err">Vyberte možnost nebo napište text</div>
+    </div>
+  </template>
+
+  <!-- Thank-you -->
   <template id="done-template">
     <div class="q-card">
       <h2 class="q-prompt">Děkujeme za vyplnění. O nabídce Vás budeme informovat co nejdříve.</h2>
@@ -141,48 +154,52 @@
   </template>
 
   <script>
-    const SURVEY_VERSION = 'v1.2';
+    const SURVEY_VERSION = 'v1.5';
     const brandName = "Ecovis Facta a.s.";
-    const logoUrl = "https://static.wixstatic.com/media/da1e67_0875863cd96b4dfaabfd81fa161c0af6~mv2.png";
+    const logoUrl = "https://cdn.brandfetch.io/ecovis.hn/fallback/lettermark/theme/dark/h/256/w/256/icon?c=1bfwsmEH20zzEfSNTed";
     const backgroundImages = [];
 
+    // You can add hiddenWhen rules to any question.
     const questions = [
-      {"id":"nazev_spolecnosti","prompt":"Název společnosti","type":"text","options":null},
-      {"id":"predmet_cinnosti","prompt":"Předmět činnosti společnosti","type":"text","options":null},
-      {"id":"obrat_minuly_rok","prompt":"Obrat za předchozí rok (je li znám)","type":"text","options":null},
-      {"id":"pocet_zapisu_denik","prompt":"Průměrný měsíční počet zápisů v účetním deníku za minulý rok","type":"text","options":null},
-      {"id":"ucetni_sw","prompt":"Pokud máte vlastní účetní SW, jaký","type":"text","options":null},
-      {"id":"ucetovani_skladu","prompt":"Jaký máte způsob účtování skladů (metoda A,B v CZ)","type":"mc","options":["nemáme","metoda A","metoda B"]},
-      {"id":"pohyb_sklad","prompt":"Pohyb skladových položek (zboží, výrobky, materiál)","type":"text","options":null},
-      {"id":"pocet_prijatych","prompt":"Počet přijatých faktur účtenek","type":"text","options":null},
-      {"id":"pocet_vydanych","prompt":"Počet vydaných faktur","type":"text","options":null},
-      {"id":"pocet_pokladen","prompt":"Počet pokladen celkem","type":"text","options":null},
-      {"id":"pocet_dhm","prompt":"Počet dlouhodobého hmotného majetku","type":"text","options":null},
-      {"id":"pocet_leasing","prompt":"Počet pronajatého majetku formou leasingu","type":"text","options":null},
-      {"id":"pocet_uveru","prompt":"Počet bankovních úvěrů a ostatních půjček","type":"text","options":null},
-      {"id":"pocet_uctu","prompt":"Počet bankovních účtů celkem","type":"text","options":null},
-      {"id":"doba_na_trhu","prompt":"Jak dlouho společnost působí na trhu","type":"text","options":null},
-      {"id":"zdan_obdobi","prompt":"Zdaňovací období","type":"mc","options":["kalendářní","hospodářský"]},
-      {"id":"zamestnanci","prompt":"Máte zaměstnance","type":"mc","options":["ANO","NE"]},
-      {"id":"pocet_zam","prompt":"Počet zaměstnanců (průměrný měsíční počet)","type":"text","options":null},
-      {"id":"vydaje_typ","prompt":"Vykazujete paušální nebo nepaušální výdaje","type":"mc","options":["paušální","nepaušální"]},
-      {"id":"registrace_dph","prompt":"Registrace k DPH","type":"mc","options":["NE","měsíční","kvartální"]},
-      {"id":"souhrnne_hlaseni","prompt":"Souhrnné hlášení k DPH","type":"mc","options":["ANO","NE"]},
-      {"id":"kontrolni_hlaseni","prompt":"Kontrolní hlášení k DPH","type":"mc","options":["ANO","NE"]},
-      {"id":"odpisy","prompt":"Opotřebení majetku (odpisy)","type":"text","options":null},
-      {"id":"zapujcky","prompt":"Zápůjčky společníků majitelů","type":"text","options":null},
-      {"id":"zahranicni_obchody","prompt":"Zahraniční obchody","type":"mc","options":["ANO","NE"]},
-      {"id":"nakup_eu","prompt":"Nákup z Evropské unie","type":"mc","options":["ANO","NE"]},
-      {"id":"prodej_eu","prompt":"Prodej do Evropské unie","type":"mc","options":["ANO","NE"]},
-      {"id":"nakup_mimo_eu","prompt":"Nákup mimo Evropskou unii (dovoz)","type":"mc","options":["ANO","NE"]},
-      {"id":"prodej_mimo_eu","prompt":"Prodej mimo Evropskou unii (vývoz)","type":"mc","options":["ANO","NE"]},
-      {"id":"ostatni","prompt":"Ostatní co jsme se nezeptali a je důležité","type":"text","options":null}
+      { id:"q1",  prompt:"Název společnosti", type:"text" },
+      { id:"q2",  prompt:"Kolik let společnost působí na trhu", type:"text" },
+      { id:"q3",  prompt:"Předmět činnosti společnosti", type:"text" },
+      { id:"q4",  prompt:"Obrat za předchozí rok v mil. Kč (je li znám)", type:"text" },
+      { id:"q5",  prompt:"Účetní období", type:"mc", options:["kalendářní rok","hospodářský rok"] },
+
+      { id:"q6",  prompt:"Průměrný měsíční počet zápisů v účetním deníku za minulý rok", type:"text" },
+      { id:"q7",  prompt:"Máte vlastní účetní SW? Jaký?", type:"mc_or_text", options:["NE"] },
+      { id:"q8",  prompt:"Jaký máte způsob účtování skladů", type:"mc_or_text", options: ["Metoda A", "Metoda B", "Sklady nemáme"] },
+
+      { id:"q9",  prompt:"Počet pohybů skladových položek (zboží, výrobky, materiál) průměrně měsíčně", type:"text",
+        hiddenWhen: [ { type:"mcOrTextChoiceEquals", questionId:"q8", index: 2 } ] },
+      { id:"q10", prompt:"Počet přijatých faktur a účtenek průměrně měsíčně", type:"text" },
+      { id:"q11", prompt:"Počet vydaných faktur průměrně měsíčně", type:"text" },
+      { id:"q12", prompt:"Počet položek dlouhodobého hmotného majetku", type:"text" },
+      { id:"q13", prompt:"Počet položek pronajatého majetku formou leasingu", type:"text" },
+      { id:"q14", prompt:"Počet bankovních úvěrů a ostatních půjček", type:"text" },
+      { id:"q15", prompt:"Která banka je hlavní banka?", type:"text" },
+      { id:"q16", prompt:"Máte účty i v zahraniční měně?", type:"text" },
+      { id:"q17", prompt:"Počet bankovních účtů celkem", type:"text" },
+
+      { id:"q18", prompt:"Kolik máte zaměstnanců průměrně měsíčně?", type:"text" },
+      { id:"q19", prompt:"Máte vysokou fluktuaci (nástupy a výstupy každý měsíc)?", type:"text" },
+      { id:"q20", prompt:"Zaměstnáváte cizince?", type:"mc", options:["ANO","NE"] },
+      { id:"q21", prompt:"Kdo připravuje pracovní smlouvy a podklady pro zpracování mezd?", type:"text" },
+
+      { id:"q22", prompt:"Registrace k DPH", type:"text" },
+      { id:"q23", prompt:"Podáváte Intrastat?", type:"mc", options:["ANO","NE"] },
+      { id:"q24", prompt:"Podáváte statistická hlášení?", type:"mc", options:["NE","měsíčně","kvartálně","ročně"] },
+      { id:"q25", prompt:"Podléháte povinému auditu?", type:"mc", options:["ANO","NE"] },
+      { id:"q26", prompt:"Vyžadujete zpracování a vyhodnocování reportů?", type:"mc", options:["NE","měsíčně","kvartálně","ročně"] },
+
+      { id:"q27", prompt:"Další informace a požadavky na účetní a daňové služby", type:"text" }
     ];
 
-    // doplň svou URL z Apps Scriptu nebo jiné služby pro příjem odpovědí
     const postEndpoint = 'https://script.google.com/macros/s/AKfycbyRiIaYHRYvTDibwW55adKbBMPNKsA-NwPqBthpCfRGjxs8M8ln7RzYIMu-KuRWbbfo/exec';
 
     const state = { index: 0, answers: {}, done: false, meta: null, version: SURVEY_VERSION };
+
     const els = {
       logo: document.getElementById('logo'),
       brandName: document.getElementById('brandName'),
@@ -216,22 +233,12 @@
         document.documentElement.style.setProperty('--bg-image', `url('${chosen}')`);
       }
 
-      const wantResume = params.get('resume') === '1';
-      const saved = loadSaved();
-      if (wantResume && saved && saved.version === SURVEY_VERSION && Number.isInteger(saved.index) && saved.index >= 0 && saved.index < questions.length) {
-        Object.assign(state, saved);
-      } else {
-        state.index = 0;
-        state.done = false;
-        state.answers = {};
-        state.version = SURVEY_VERSION;
-      }
       render();
     }
 
     function onBack() {
       if (state.index > 0) {
-        state.index--;
+        state.index = prevVisibleIndex(state.index);
         render();
       }
     }
@@ -239,8 +246,14 @@
     async function onNext() {
       if (state.done) return restart();
       if (!validateCurrent()) return;
+
       if (state.index < questions.length - 1) {
-        state.index++;
+        const next = nextVisibleIndex(state.index);
+        if (next === state.index) {
+          await submit();
+          return;
+        }
+        state.index = next;
         render();
       } else {
         await submit();
@@ -252,109 +265,128 @@
       toast('Postup uložen do tohoto prohlížeče');
     }
 
-    function loadSaved() {
-      try { return JSON.parse(localStorage.getItem('surveyState')); } catch { return null; }
-    }
-
     function restart() {
       localStorage.removeItem('surveyState');
-      state.index = 0;
-      state.answers = {};
-      state.done = false;
-      state.version = SURVEY_VERSION;
+      state.index = 0; state.answers = {}; state.done = false; state.version = SURVEY_VERSION;
       render();
     }
 
     function validateCurrent() {
       const q = questions[state.index];
-      const val = state.answers[q.id];
-      const ok = q.type === 'text' ? !!(val && String(val).trim()) : val !== undefined;
+      if (isHidden(q)) return true;
+
+      const v = state.answers[q.id];
+      let ok = false;
+
+      if (q.type === 'text') ok = !!(v && String(v).trim());
+      else if (q.type === 'mc') ok = Number.isInteger(v);
+      else if (q.type === 'mc_or_text') ok = (v && typeof v === 'object' && (Number.isInteger(v.choiceIndex) || (v.text && v.text.trim().length>0)));
+
       const err = els.qMount.querySelector('[data-role="err"]');
       if (err) err.classList.toggle('hidden', ok);
       return ok;
     }
 
+    /* ========= Skip-logic helpers ========= */
+    function isRuleMatched(rule) {
+      const ans = state.answers[rule.questionId];
+      switch (rule.type) {
+        case 'mcEquals': return Number.isInteger(ans) && ans === rule.index;
+        case 'textEquals':
+          return typeof ans === 'string'
+            && ans.trim().toLowerCase() === String(rule.value || '').trim().toLowerCase();
+        case 'textContains':
+          return typeof ans === 'string'
+            && ans.toLowerCase().includes(String(rule.value || '').toLowerCase());
+        case 'mcOrTextChoiceEquals':
+          return ans && typeof ans === 'object' && Number.isInteger(ans.choiceIndex)
+            && ans.choiceIndex === rule.index;
+        case 'mcOrTextHasText':
+          return ans && typeof ans === 'object' && ans.text && ans.text.trim().length > 0;
+        default: return false;
+      }
+    }
+    function isHidden(q) {
+      if (!q || !q.hiddenWhen || !Array.isArray(q.hiddenWhen)) return false;
+      return q.hiddenWhen.some(isRuleMatched);
+    }
+    function visibleQuestions() { return questions.filter(q => !isHidden(q)); }
+    function nextVisibleIndex(from) { for (let i=from+1;i<questions.length;i++) if (!isHidden(questions[i])) return i; return from; }
+    function prevVisibleIndex(from) { for (let i=from-1;i>=0;i--) if (!isHidden(questions[i])) return i; return from; }
+    /* ===================================== */
+
     function setProgress() {
-      const total = questions.length;
-      const pct = Math.round((Math.min(state.index + 1, total) / total) * 100);
+      const vis = visibleQuestions();
+      const current = questions[state.index];
+      const visIndex = Math.max(0, vis.findIndex(q => q.id === current.id));
+      const pct = Math.round(((visIndex + 1) / Math.max(1, vis.length)) * 100);
       els.bar.style.width = pct + '%';
-      els.progressText.textContent = `${Math.min(state.index + 1, total)} z ${total}`;
+      els.progressText.textContent = `${visIndex + 1} z ${vis.length}`;
       els.percent.textContent = pct + '%';
     }
 
     function render() {
-      setProgress();
+      if (isHidden(questions[state.index])) {
+        const next = nextVisibleIndex(state.index);
+        if (next !== state.index) state.index = next;
+      }
 
+      setProgress();
       const mount = els.qMount;
       mount.innerHTML = '';
 
       if (state.done) {
         const tpl = document.getElementById('done-template').content.cloneNode(true);
         mount.appendChild(tpl);
-
-        // skryj navigaci v dokončeném stavu
         els.back.style.display = 'none';
         els.next.style.display = 'none';
         els.save.style.display = 'none';
         return;
       } else {
-        // při běžném průchodu zviditelni navigaci
         els.back.style.display = '';
         els.next.style.display = '';
         els.save.style.display = '';
       }
 
-      els.back.disabled = state.index === 0;
-      els.next.textContent = state.index === questions.length - 1 ? 'Odeslat' : 'Další';
+      if (isHidden(questions[state.index])) {
+        const firstVisible = questions.findIndex(q => !isHidden(q));
+        state.index = firstVisible === -1 ? 0 : firstVisible;
+      }
+
+      els.back.disabled = prevVisibleIndex(state.index) === state.index;
+      els.next.textContent = (nextVisibleIndex(state.index) === state.index && state.index < questions.length - 1) ? 'Odeslat' :
+                             (state.index === questions.length - 1 ? 'Odeslat' : 'Další');
 
       const q = questions[state.index];
       const value = state.answers[q.id];
 
-      if (q.type === 'mc' && q.options && q.options.length) {
+      if (q.type === 'mc') {
         const tpl = document.getElementById('mc-template').content.cloneNode(true);
         tpl.getElementById('prompt').textContent = q.prompt;
-        const img = tpl.getElementById('qimg');
-        if (q.image) { img.src = q.image; img.classList.remove('hidden'); }
-        const ul = tpl.getElementById('options');
-        ul.innerHTML = '';
+        const img = tpl.getElementById('qimg'); if (q.image) { img.src = q.image; img.classList.remove('hidden'); }
+        const ul = tpl.getElementById('options'); ul.innerHTML = '';
 
         q.options.forEach((opt, i) => {
-          const li = document.createElement('li');
-          li.className = 'option';
-
+          const li = document.createElement('li'); li.className = 'option';
           const input = document.createElement('input');
-          input.type = 'radio';
-          input.name = q.id;
-          input.value = String(i);
-          input.checked = value === i;
+          input.type = 'radio'; input.name = q.id; input.value = String(i); input.checked = value === i;
           input.setAttribute('aria-label', String.fromCharCode(65 + i) + '. ' + opt);
-          input.addEventListener('change', () => {
-            state.answers[q.id] = i;
-            els.next.disabled = false;
-          });
+          input.addEventListener('change', () => { state.answers[q.id] = i; els.next.disabled = false; render(); });
 
-          const badge = document.createElement('div');
-          badge.className = 'badge';
-          badge.textContent = String.fromCharCode(65 + i);
-
-          const label = document.createElement('label');
-          label.textContent = opt;
-          label.style.flex = '1';
+          const badge = document.createElement('div'); badge.className = 'badge'; badge.textContent = String.fromCharCode(65 + i);
+          const label = document.createElement('label'); label.textContent = opt; label.style.flex = '1';
 
           li.addEventListener('click', () => { input.checked = true; input.dispatchEvent(new Event('change')); });
-
-          li.appendChild(badge);
-          li.appendChild(input);
-          li.appendChild(label);
+          li.appendChild(badge); li.appendChild(input); li.appendChild(label);
           ul.appendChild(li);
         });
 
         mount.appendChild(tpl);
-      } else {
+      }
+      else if (q.type === 'text') {
         const tpl = document.getElementById('text-template').content.cloneNode(true);
         tpl.getElementById('prompt').textContent = q.prompt;
-        const img = tpl.getElementById('qimg');
-        if (q.image) { img.src = q.image; img.classList.remove('hidden'); }
+        const img = tpl.getElementById('qimg'); if (q.image) { img.src = q.image; img.classList.remove('hidden'); }
         const ta = tpl.getElementById('textInput');
         ta.value = value || '';
         ta.addEventListener('input', (e) => {
@@ -363,47 +395,89 @@
         });
         mount.appendChild(tpl);
       }
+      else if (q.type === 'mc_or_text') {
+        const tpl = document.getElementById('mc-or-text-template').content.cloneNode(true);
+        tpl.getElementById('prompt').textContent = q.prompt;
+        const ul = tpl.getElementById('options');
+        const inputBox = tpl.getElementById('comboInput');
 
-      const hasValue = q.type === 'text' ? !!(value && String(value).trim()) : value !== undefined;
-      els.next.disabled = !hasValue;
-      els.save.disabled = false;
+        let current = value && typeof value === 'object' ? value : {choiceIndex:null, option:null, text:''};
+
+        q.options.forEach((opt, i) => {
+          const li = document.createElement('li'); li.className = 'option';
+          const input = document.createElement('input');
+          input.type = 'radio'; input.name = q.id; input.value = String(i); input.checked = current.choiceIndex === i;
+          input.setAttribute('aria-label', String.fromCharCode(65 + i) + '. ' + opt);
+          input.addEventListener('change', () => {
+            current = { choiceIndex: i, option: opt, text: '' };
+            inputBox.value = '';
+            state.answers[q.id] = current;
+            els.next.disabled = false;
+            render(); // radios can change visibility immediately
+          });
+
+          const badge = document.createElement('div'); badge.className = 'badge'; badge.textContent = String.fromCharCode(65 + i);
+          const label = document.createElement('label'); label.textContent = opt; label.style.flex = '1';
+
+          li.addEventListener('click', () => { input.checked = true; input.dispatchEvent(new Event('change')); });
+          li.appendChild(badge); li.appendChild(input); li.appendChild(label);
+          ul.appendChild(li);
+        });
+
+        inputBox.value = current.text || '';
+        inputBox.addEventListener('input', (e) => {
+          const t = e.target.value || '';
+          if (t.trim().length > 0) {
+            current = { choiceIndex: null, option: null, text: t };
+            // Clear any selected radio
+            [...ul.querySelectorAll('input[type="radio"]')].forEach(r => r.checked = false);
+            state.answers[q.id] = current;
+            els.next.disabled = false;
+            // IMPORTANT: do NOT call render() here (prevents caret reset)
+          } else {
+            const anyChecked = !!ul.querySelector('input[type="radio"]:checked');
+            state.answers[q.id] = anyChecked ? current : null;
+            els.next.disabled = !anyChecked;
+            // No render() here either
+          }
+        });
+
+        mount.appendChild(tpl);
+      }
+
+      // set button disabled according to validation
+      els.next.disabled = !validateCurrent();
     }
 
-async function submit() {
-  const payload = buildPayload();
-  const body = JSON.stringify(payload);
+    async function submit() {
+      const payload = buildPayload();
+      const body = JSON.stringify(payload);
 
-  try {
-    // Simple request to avoid preflight; no headers
-    await fetch(postEndpoint, { method: 'POST', body });
-    // We deliberately don't read res.json() to avoid CORS read issues
-  } catch (err) {
-    // Fallback that does not care about CORS
-    const ok = typeof navigator.sendBeacon === 'function'
-      ? navigator.sendBeacon(postEndpoint, new Blob([body], { type: 'text/plain' }))
-      : false;
+      try {
+        await fetch(postEndpoint, { method: 'POST', body });
+      } catch (err) {
+        const ok = typeof navigator.sendBeacon === 'function'
+          ? navigator.sendBeacon(postEndpoint, new Blob([body], { type: 'text/plain' }))
+          : false;
+        if (!ok) {
+          console.error('Both fetch and beacon failed', err);
+          toast('Nepodařilo se potvrdit odeslání. Zkontrolujte prosím připojení.');
+        }
+      }
 
-    if (!ok) {
-      console.error('Both fetch and beacon failed', err);
-      toast('Nepodařilo se potvrdit odeslání. Zkontrolujte prosím připojení.');
-      // We can still proceed, because server may have accepted the POST
+      state.done = true;
+      render();
     }
-  }
-
-  // Show the thank-you screen regardless (server already wrote to Sheet)
-  state.done = true;
-  render();
-}
-
 
     function buildPayload() {
       const answers = {};
       for (const q of questions) {
-        let val = state.answers[q.id];
-        if (q.type === 'mc' && Number.isInteger(val)) {
-          val = { index: val, option: q.options[val] };
+        let v = state.answers[q.id];
+        if (q.type === 'mc' && Number.isInteger(v)) v = { index: v, option: q.options[v] };
+        if (q.type === 'mc_or_text' && v && typeof v === 'object') {
+          // {choiceIndex, option, text}
         }
-        answers[q.id] = val ?? null;
+        answers[q.id] = v ?? null;
       }
       return {
         brand: brandName,
