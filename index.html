@@ -89,6 +89,29 @@
       background:#fafafa; color:#111827; border:1px solid #e5e7eb;
     }
     @media (max-width: 640px) { .double-wrap { grid-template-columns: 1fr; } }
+    /* === Scrollability fixes === */
+    body {
+      /* enable page scroll (was overflow: hidden) */
+      overflow-y: auto;
+    }
+
+    .card {
+      /* let the survey card scroll if content is tall */
+      max-height: calc(100svh - 48px); /* uses small-viewport height for mobile toolbars */
+      overflow: auto;
+      -webkit-overflow-scrolling: touch; /* smooth iOS scroll */
+    }
+
+    /* keep the nav visible and clickable even when a question is long */
+    .nav {
+      position: sticky;
+      bottom: 0;
+      background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+      border-top: 1px solid #e5e7eb;
+      padding: 12px;
+      margin-top: 16px;
+    }
+
   </style>
 </head>
 <body>
