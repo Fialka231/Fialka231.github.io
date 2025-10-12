@@ -79,6 +79,16 @@
     footer { margin-top: 20px; color: #6b7280; font-size: 12px; text-align: center; }
     .hidden { display: none; }
     @media (max-width: 520px) { .title { font-size: 22px; } }
+
+    /* --- Double input styles --- */
+    .double-wrap { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+    .double-field { display:flex; flex-direction:column; gap:6px; }
+    .double-label { font-size:13px; color:#6b7280; }
+    .double-input {
+      width:100%; min-height:44px; padding:10px 12px; border-radius:12px;
+      background:#fafafa; color:#111827; border:1px solid #e5e7eb;
+    }
+    @media (max-width: 640px) { .double-wrap { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -146,6 +156,36 @@
     </div>
   </template>
 
+  <!-- Multi-select + optional text -->
+  <template id="multi-or-text-template">
+    <div class="q-card" role="group" aria-labelledby="prompt">
+      <p class="q-prompt" id="prompt"></p>
+      <img class="q-image hidden" id="qimg" alt="Ilustrační obrázek" />
+      <ul class="options" id="options" style="margin-bottom:10px;"></ul>
+      <input class="textarea" id="freeInput" placeholder="(můžete doplnit vlastní text)…"
+             style="min-height:44px; height:44px; padding:10px;"></input>
+      <div class="error hidden" data-role="err">Vyberte alespoň jednu možnost nebo napište text</div>
+    </div>
+  </template>
+
+  <!-- Double text template (E-mail + Telefon) -->
+  <template id="double-template">
+    <div class="q-card" role="group" aria-labelledby="prompt">
+      <p class="q-prompt" id="prompt"></p>
+      <div class="double-wrap">
+        <div class="double-field">
+          <label class="double-label" id="label1"></label>
+          <input class="double-input" id="input1" />
+        </div>
+        <div class="double-field">
+          <label class="double-label" id="label2"></label>
+          <input class="double-input" id="input2" />
+        </div>
+      </div>
+      <div class="error hidden" data-role="err">Vyplňte prosím platný e-mail i telefon.</div>
+    </div>
+  </template>
+
   <!-- Thank-you -->
   <template id="done-template">
     <div class="q-card">
@@ -154,16 +194,48 @@
   </template>
 
   <script>
-    const SURVEY_VERSION = 'v1.5';
+    const SURVEY_VERSION = 'v1.7';
     const brandName = "Ecovis Facta a.s.";
     const logoUrl = "https://cdn.brandfetch.io/ecovis.hn/fallback/lettermark/theme/dark/h/256/w/256/icon?c=1bfwsmEH20zzEfSNTed";
     const backgroundImages = [];
 
-    // You can add hiddenWhen rules to any question.
+    // Questions (with double input as #2 and NEW multi_or_text as #4)
     const questions = [
       { id:"q1",  prompt:"Název společnosti", type:"text" },
-      { id:"q2",  prompt:"Kolik let společnost působí na trhu", type:"text" },
+
+      // #2 – double inputs (email + phone)
+      {
+        id: "contact",
+        type: "double",
+        prompt: "Kontaktní údaje",
+        fields: [
+          { key: "email", label: "E-mail",   placeholder: "např. jmeno@firma.cz",     inputType: "email", required: true, validate: "email" },
+          { key: "phone", label: "Telefon",  placeholder: "např. +420 123 456 789",   inputType: "tel",   required: true, validate: "phone" }
+        ]
+      },
+
+      { id:"q2",  prompt:"Společnost je aktuálně:", type:"mc_or_text", options: ["Startup (fáze nápadu/vývoje)","Startup (fáze růstu)", "Fungující společnost (na trhu déle než 3 roky)","Freelancer / samostatně podnikající osoba"] },
       { id:"q3",  prompt:"Předmět činnosti společnosti", type:"text" },
+
+      // #4 – NEW: multiple select + optional text
+      {
+        id: "services",
+        type: "multi_or_text",
+        prompt: "Hledáme poskytovatele služeb",
+        options: [
+          "Vedení účetnictví",
+          "Mzdová agenda",
+          "Daňové poradenství",
+          "Reporting a controlling",
+          "Právní služby",
+          "Audit",
+          "Transakční poradentví",
+          "Zpracování TP dokumentace",
+          "Cenové kalkulace",
+          "Due Dilligence"
+        ]
+      },
+
       { id:"q4",  prompt:"Obrat za předchozí rok v mil. Kč (je li znám)", type:"text" },
       { id:"q5",  prompt:"Účetní období", type:"mc", options:["kalendářní rok","hospodářský rok"] },
 
@@ -212,6 +284,24 @@
       next: document.getElementById('nextBtn'),
       save: document.getElementById('saveBtn')
     };
+
+    /* ===== Validation helpers for double input ===== */
+    function isEmail(s) {
+      if (!s) return false;
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s).trim());
+    }
+    function isPhone(s) {
+      if (!s) return false;
+      const digits = String(s).replace(/[^\d]/g, '');
+      return digits.length >= 7;
+    }
+    function validateField(val, rule) {
+      if (rule?.required && (!val || String(val).trim() === "")) return false;
+      if (!val) return !rule?.required;
+      if (rule?.validate === 'email') return isEmail(val);
+      if (rule?.validate === 'phone') return isPhone(val);
+      return true;
+    }
 
     function init() {
       els.logo.src = logoUrl;
@@ -279,9 +369,29 @@
       const v = state.answers[q.id];
       let ok = false;
 
-      if (q.type === 'text') ok = !!(v && String(v).trim());
-      else if (q.type === 'mc') ok = Number.isInteger(v);
-      else if (q.type === 'mc_or_text') ok = (v && typeof v === 'object' && (Number.isInteger(v.choiceIndex) || (v.text && v.text.trim().length>0)));
+      if (q.type === 'text') {
+        ok = !!(v && String(v).trim());
+      } else if (q.type === 'mc') {
+        ok = Number.isInteger(v);
+      } else if (q.type === 'mc_or_text') {
+        ok = (v && typeof v === 'object' && (Number.isInteger(v.choiceIndex) || (v.text && v.text.trim().length>0)));
+      } else if (q.type === 'double') {
+        if (v && typeof v === 'object' && Array.isArray(q.fields) && q.fields.length === 2) {
+          const a = q.fields[0], b = q.fields[1];
+          ok = validateField(v[a.key], a) && validateField(v[b.key], b);
+        } else {
+          ok = false;
+        }
+      } else if (q.type === 'multi_or_text') {
+        // v = { indices:number[], options:string[], text:string }
+        if (v && typeof v === 'object') {
+          const hasAny = (Array.isArray(v.indices) && v.indices.length > 0) ||
+                         (v.text && String(v.text).trim().length > 0);
+          ok = !!hasAny;
+        } else {
+          ok = false;
+        }
+      }
 
       const err = els.qMount.querySelector('[data-role="err"]');
       if (err) err.classList.toggle('hidden', ok);
@@ -430,17 +540,115 @@
           const t = e.target.value || '';
           if (t.trim().length > 0) {
             current = { choiceIndex: null, option: null, text: t };
-            // Clear any selected radio
             [...ul.querySelectorAll('input[type="radio"]')].forEach(r => r.checked = false);
             state.answers[q.id] = current;
             els.next.disabled = false;
-            // IMPORTANT: do NOT call render() here (prevents caret reset)
           } else {
             const anyChecked = !!ul.querySelector('input[type="radio"]:checked');
             state.answers[q.id] = anyChecked ? current : null;
             els.next.disabled = !anyChecked;
-            // No render() here either
           }
+        });
+
+        mount.appendChild(tpl);
+      }
+      else if (q.type === 'multi_or_text') {
+        const tpl = document.getElementById('multi-or-text-template').content.cloneNode(true);
+        tpl.getElementById('prompt').textContent = q.prompt;
+        const img = tpl.getElementById('qimg'); if (q.image) { img.src = q.image; img.classList.remove('hidden'); }
+        const ul = tpl.getElementById('options');
+        const inputBox = tpl.getElementById('freeInput');
+
+        // normalize value
+        let current = (value && typeof value === 'object')
+          ? { indices: Array.isArray(value.indices) ? value.indices.slice() : [],
+              options: Array.isArray(value.options) ? value.options.slice() : [],
+              text: value.text || '' }
+          : { indices: [], options: [], text: '' };
+
+        q.options.forEach((opt, i) => {
+          const li = document.createElement('li'); li.className = 'option';
+
+          const input = document.createElement('input');
+          input.type = 'checkbox';
+          input.name = q.id;
+          input.value = String(i);
+          input.checked = current.indices.includes(i);
+          input.setAttribute('aria-label', String.fromCharCode(65 + i) + '. ' + opt);
+
+          input.addEventListener('change', () => {
+            if (input.checked) {
+              if (!current.indices.includes(i)) {
+                current.indices.push(i);
+                current.options.push(opt);
+              }
+            } else {
+              const idx = current.indices.indexOf(i);
+              if (idx >= 0) current.indices.splice(idx, 1);
+              const oidx = current.options.indexOf(opt);
+              if (oidx >= 0) current.options.splice(oidx, 1);
+            }
+            state.answers[q.id] = current;
+            els.next.disabled = !validateCurrent();
+          });
+
+          const badge = document.createElement('div'); badge.className = 'badge';
+          badge.textContent = String.fromCharCode(65 + i);
+
+          const label = document.createElement('label'); label.textContent = opt; label.style.flex = '1';
+
+          li.addEventListener('click', (ev) => {
+            if (ev.target !== input) { input.checked = !input.checked; input.dispatchEvent(new Event('change')); }
+          });
+
+          li.appendChild(badge);
+          li.appendChild(input);
+          li.appendChild(label);
+          ul.appendChild(li);
+        });
+
+        inputBox.value = current.text || '';
+        inputBox.addEventListener('input', (e) => {
+          current.text = e.target.value || '';
+          state.answers[q.id] = current;
+          els.next.disabled = !validateCurrent();
+        });
+
+        mount.appendChild(tpl);
+      }
+      else if (q.type === 'double') {
+        const tpl = document.getElementById('double-template').content.cloneNode(true);
+        tpl.getElementById('prompt').textContent = q.prompt;
+
+        const current = (value && typeof value === 'object') ? value : {};
+        const fields = Array.isArray(q.fields) ? q.fields.slice(0,2) : [];
+        const [f1, f2] = fields;
+
+        const label1 = tpl.getElementById('label1');
+        const label2 = tpl.getElementById('label2');
+        const input1 = tpl.getElementById('input1');
+        const input2 = tpl.getElementById('input2');
+
+        // Field 1
+        label1.textContent = f1?.label || 'Pole 1';
+        input1.type = f1?.inputType || 'text';
+        input1.placeholder = f1?.placeholder || '';
+        input1.value = current[f1?.key] || '';
+        input1.autocomplete = (f1?.inputType === 'email') ? 'email' : (f1?.inputType === 'tel') ? 'tel' : 'on';
+        input1.addEventListener('input', (e) => {
+          state.answers[q.id] = Object.assign({}, state.answers[q.id], { [f1.key]: e.target.value });
+          els.next.disabled = !validateCurrent();
+        });
+
+        // Field 2
+        label2.textContent = f2?.label || 'Pole 2';
+        input2.type = f2?.inputType || 'text';
+        input2.placeholder = f2?.placeholder || '';
+        input2.value = current[f2?.key] || '';
+        input2.autocomplete = (f2?.inputType === 'email') ? 'email' : (f2?.inputType === 'tel') ? 'tel' : 'on';
+        input2.addEventListener('input', (e) => {
+          state.answers[q.id] = Object.assign({}, state.answers[q.id], { [f2.key]: e.target.value });
+          els.next.disabled = !validateCurrent();
         });
 
         mount.appendChild(tpl);
@@ -450,49 +658,37 @@
       els.next.disabled = !validateCurrent();
     }
 
-      async function submit() {
+    async function submit() {
       // guard: prevent double-clicks during submission
       els.next.disabled = true;
-    
+
       const payload = buildPayload();
       // add a client idempotency key
       payload.meta = payload.meta || {};
       payload.meta.idempotency_key = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random();
-    
+
       const body = JSON.stringify(payload);
-    
+
       try {
-        // make a "simple request" that won't preflight
-        const res = await fetch(postEndpoint, {
+        await fetch(postEndpoint, {
           method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
+          headers: { 'Content-Type': 'text/plain' }, // simple request (no preflight)
           body
         });
-    
-        // Even if CORS prevents reading JSON, the request has been sent.
-        // So DO NOT retry with sendBeacon here.
-    
-        // Optional: if you can read it, check .ok
-        // if (!res.ok) console.warn('Server returned non-2xx', res.status);
       } catch (err) {
-        // Log only; don't retry blindly (prevents duplicate submissions)
         console.warn('Fetch failed (likely CORS). Not retrying to avoid duplicates.', err);
       }
-    
+
       state.done = true;
       render();
     }
-
-    
 
     function buildPayload() {
       const answers = {};
       for (const q of questions) {
         let v = state.answers[q.id];
         if (q.type === 'mc' && Number.isInteger(v)) v = { index: v, option: q.options[v] };
-        if (q.type === 'mc_or_text' && v && typeof v === 'object') {
-          // {choiceIndex, option, text}
-        }
+        // mc_or_text keeps its object; multi_or_text keeps {indices, options, text}; double keeps {email, phone}
         answers[q.id] = v ?? null;
       }
       return {
