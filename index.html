@@ -1,743 +1,196 @@
 <!DOCTYPE html>
-</html><!doctype html>
 <html lang="cs">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ecovis Facta a.s. – Dotazník pro poptávku</title>
+  <title>Přihláška na školení ECOVIS</title>
   <style>
-    :root {
-      --brand: #c8102e;
-      --bg: #ffffff;
-      --card: #ffffff;
-      --text: #111827;
-      --muted: #6b7280;
-      --accent: #c8102e;
-      --error: #ef4444;
-      --bg-image: '';
-    }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      background: linear-gradient(180deg, #ffffff 0%, #f7f7f7 100%);
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      position: relative;
-      overflow: hidden;
-    }
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background-image: var(--bg-image);
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: right bottom;
-      opacity: 0.15;
-      pointer-events: none;
-      filter: saturate(1.05);
-    }
-    .container { width: 100%; max-width: 900px; }
-    .card {
-      background:
-        radial-gradient(1200px 400px at 10% 0%, rgba(200,16,46,0.08) 0%, rgba(200,16,46,0) 40%),
-        radial-gradient(1000px 400px at 100% 10%, rgba(200,16,46,0.06) 0%, rgba(200,16,46,0) 50%),
-        var(--card);
-      color: #111827;
-      border: 2px solid rgba(200,16,46,0.20);
-      border-radius: 18px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-      padding: 24px;
-    }
-    header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
-    header img.logo { height: 100px; width: auto; border-radius: 8px; }
-    .brand-title { font-size: 18px; color: var(--muted); }
-    .title { font-size: 28px; font-weight: 800; letter-spacing: 0.2px; margin: 8px 0 0 0; color: #111827; }
-    .subtitle { margin-top: 4px; color: var(--muted); font-size: 14px; }
-    .progress { background: #f1f5f9; height: 10px; border-radius: 999px; overflow: hidden; margin: 16px 0 8px 0; border: 1px solid #e5e7eb; }
-    .bar { height: 100%; background: linear-gradient(90deg, #c8102e, #a50f27); width: 0%; transition: width 200ms ease; }
-    .progress-meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; }
-    .q-card { margin-top: 16px; padding: 18px; border-radius: 14px; border: 1px solid #e5e7eb; background: #ffffff; }
-    .q-prompt { font-size: 18px; font-weight: 700; margin: 0 0 8px 0; color: #111827; }
-    .q-image { width: 100%; max-height: 260px; object-fit: cover; border-radius: 12px; border: 1px solid #e5e7eb; margin: 10px 0; }
-    .options { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 8px; }
-    .option { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 12px; border: 1px solid #e5e7eb; background: #fafafa; cursor: pointer; }
-    .option:hover { background: #f5f5f5; }
-    .badge { font-weight: 800; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 8px; background: rgba(200,16,46,0.12); border: 1px solid rgba(200,16,46,0.35); color: #7a0b1f; }
-    .textarea { width: 100%; min-height: 140px; padding: 12px; border-radius: 12px; background: #fafafa; color: #111827; border: 1px solid #e5e7eb; }
-    .textarea::placeholder { color: #94a3b8; }
-    .error { color: var(--error); font-size: 13px; margin-top: 6px; }
-    .nav { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; gap: 12px; }
-    .btn { background: linear-gradient(180deg, #ffffff, #fafafa); color: #111827; border: 1px solid #e5e7eb; padding: 10px 16px; border-radius: 12px; cursor: pointer; font-weight: 700; }
-    .btn.primary { background: linear-gradient(180deg, #c8102e, #a50f27); color: #fff; border-color: #b91c1c; }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    footer { margin-top: 20px; color: #6b7280; font-size: 12px; text-align: center; }
-    .hidden { display: none; }
-    @media (max-width: 520px) { .title { font-size: 22px; } }
+    :root { --ecovis-red:#b5121b; --ecovis-white:#ffffff; --muted:#666; --ink:#222; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:var(--ecovis-white); color:var(--ink); margin:0; }
+    header { background:var(--ecovis-red); color:white; padding:16px; display:flex; align-items:center; gap:14px; }
+    header img { width:64px; height:64px; border-radius:50%; background:white; }
+    header h1 { font-size:1.8rem; margin:0; }
+    .wrap { max-width:900px; margin:24px auto; padding:0 16px; }
+    form { background:#fff; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,.08); padding:24px; }
+    fieldset { border:1px solid #e5e5e5; border-radius:10px; padding:16px; margin-bottom:20px; }
+    legend { padding:0 6px; font-weight:600; color:var(--ecovis-red); }
+    label { display:block; margin-top:8px; font-weight:500; }
+    input, textarea, select { width:100%; padding:10px; border:1px solid #ccc; border-radius:8px; font-size:1rem; box-sizing:border-box; }
+    textarea { min-height:100px; resize:vertical; }
+    button { background:var(--ecovis-red); color:white; border:0; border-radius:8px; padding:12px 16px; font-size:1rem; cursor:pointer; }
+    button:hover { opacity:0.9; }
 
-    /* --- Double input styles --- */
-    .double-wrap { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
-    .double-field { display:flex; flex-direction:column; gap:6px; }
-    .double-label { font-size:13px; color:#6b7280; }
-    .double-input {
-      width:100%; min-height:44px; padding:10px 12px; border-radius:12px;
-      background:#fafafa; color:#111827; border:1px solid #e5e7eb;
-    }
-    @media (max-width: 640px) { .double-wrap { grid-template-columns: 1fr; } }
-    /* === Scrollability fixes === */
-    body {
-      /* enable page scroll (was overflow: hidden) */
-      overflow-y: auto;
-    }
+    .checkline { display:flex; align-items:flex-start; gap:10px; padding:10px 12px; border:1px solid #ddd; border-radius:10px; background:#fff; margin-top:10px; cursor:pointer; }
+    .checkline:hover { border-color: var(--ecovis-red); }
+    .checkline input[type="checkbox"] { width:22px; height:22px; flex:0 0 22px; margin-top:3px; accent-color: var(--ecovis-red); }
+    .checkline span { line-height:1.35; font-weight:500; }
+    .checkline .hint { display:block; font-weight:400; color:var(--muted); margin-top:2px; }
 
-    .card {
-      /* let the survey card scroll if content is tall */
-      max-height: calc(100svh - 48px); /* uses small-viewport height for mobile toolbars */
-      overflow: auto;
-      -webkit-overflow-scrolling: touch; /* smooth iOS scroll */
-    }
+    #attendees { display:grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap:12px; margin-top:12px; }
+    .attendee-box { background:#f9f9f9; border:1px solid #ddd; border-radius:8px; padding:12px; display:flex; flex-direction:column; }
+    .attendee-box label { margin:0 0 4px 0; font-weight:500; font-size:0.95rem; }
 
-    /* keep the nav visible and clickable even when a question is long */
-    .nav {
-      position: sticky;
-      bottom: 0;
-      background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
-      border-top: 1px solid #e5e7eb;
-      padding: 12px;
-      margin-top: 16px;
-    }
+    .hint { font-size:.9rem; color:var(--muted); }
+    .ok { color:green; }
+    .err { color:#c62828; }
 
+    #qrcode { display:none; margin-top:10px; }
+    #qrcode img { max-width:150px; border:1px solid #ddd; padding:4px; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="card" id="app">
-      <header>
-        <img class="logo" id="logo" alt="Company logo" />
-        <div>
-          <div class="brand-title" id="brandName">Ecovis Facta a.s.</div>
-          <h1 class="title">Dotazník pro poptávku služeb</h1>
-          <div class="subtitle">Odpovědi nám pomohou připravit Vaši nabídku.</div>
-        </div>
-      </header>
+  <header>
+    <img src="https://media.licdn.com/dms/image/v2/C4D0BAQEDUpY9Cfe5eg/company-logo_200_200/company-logo_200_200/0/1630518714792?e=2147483647&v=beta&t=-TTxTAKDyCQjMkaX8U-rIVESsqVSJxchJpp_IxWvoTY" alt="ECOVIS logo">
+    <h1>Přihláška na školení ECOVIS</h1>
+  </header>
 
-      <div class="progress" aria-label="Postup">
-        <div class="bar" id="bar"></div>
-      </div>
-      <div class="progress-meta"><span id="progressText">0 z 0</span><span id="percent">0%</span></div>
+  <div class="wrap">
+    <form id="regForm">
+      <fieldset>
+        <legend>Firma a kontakt</legend>
+        <label>Název společnosti*</label>
+        <input type="text" id="company" required placeholder="ECOVIS FACTA a.s.">
+        <label>IČO společnosti*</label>
+        <input type="text" id="ico" required placeholder="12345678">
+        <label>Kontaktní e-mail*</label>
+        <input type="email" id="email" required placeholder="jana.novakova@firma.cz">
+        <label>Telefon*</label>
+        <input type="tel" id="phone" required placeholder="+420 777 000 000">
+      </fieldset>
 
-      <div id="questionMount"></div>
+      <fieldset>
+        <legend>Výběr přednášek</legend>
+        <label class="checkline">
+          <input type="checkbox" name="lectures" value="A">
+          <span><strong>Přednáška A – Daňové novinky 2025</strong><br><span class="hint">cena 1200 Kč / osoba</span></span>
+        </label>
+        <label class="checkline">
+          <input type="checkbox" name="lectures" value="B">
+          <span><strong>Přednáška B – Digitalizace účetnictví</strong><br><span class="hint">cena 900 Kč / osoba</span></span>
+        </label>
+        <label class="checkline">
+          <input type="checkbox" name="lectures" value="C">
+          <span><strong>Přednáška C – Personalistika v praxi</strong><br><span class="hint">cena 800 Kč / osoba</span></span>
+        </label>
+      </fieldset>
 
-      <div class="nav">
-        <button class="btn" id="backBtn">Zpět</button>
-        <div style="display:flex; gap:8px;">
-          <button class="btn" id="saveBtn" title="Uložit postup do tohoto prohlížeče">Uložit</button>
-          <button class="btn primary" id="nextBtn">Další</button>
-        </div>
-      </div>
+      <fieldset>
+        <legend>Účastníci</legend>
+        <label>Počet účastníků*</label>
+        <input type="number" id="qty" min="1" value="1" required>
+        <div id="attendees"></div>
+      </fieldset>
 
-      <footer>
-        Pokračováním souhlasíte se zpracováním pro účely vyřízení Vaší poptávky.
-      </footer>
-    </div>
+      <fieldset>
+        <legend>Další požadavky</legend>
+        <label>Komentáře a požadavky</label>
+        <textarea id="comments"></textarea>
+        <label class="checkline"><input type="checkbox" id="gdpr" required><span>Souhlasím se zpracováním osobních údajů<span class="hint"> pro účely registrace a fakturace</span></span></label>
+      </fieldset>
+
+      <p><strong>Celkem k úhradě:</strong> <span id="total">0 Kč</span></p>
+
+      <div id="qrcode"></div>
+      <p id="qrHint" class="hint" style="display:none;">QR kód byl úspěšně vygenerován pro platbu přes Raiffeisenbank.</p>
+
+      <button type="submit">Odeslat přihlášku</button>
+      <p id="msg" class="hint"></p>
+    </form>
   </div>
 
-  <!-- Multiple choice template -->
-  <template id="mc-template">
-    <div class="q-card" role="group" aria-labelledby="prompt">
-      <p class="q-prompt" id="prompt"></p>
-      <img class="q-image hidden" id="qimg" alt="Ilustrační obrázek" />
-      <ul class="options" id="options"></ul>
-      <div class="error hidden" data-role="err">Tato otázka je povinná</div>
-    </div>
-  </template>
-
-  <!-- Text answer template -->
-  <template id="text-template">
-    <div class="q-card" role="group" aria-labelledby="prompt">
-      <p class="q-prompt" id="prompt"></p>
-      <img class="q-image hidden" id="qimg" alt="Ilustrační obrázek" />
-      <textarea class="textarea" id="textInput" placeholder="Odpověď napište sem..."></textarea>
-      <div class="error hidden" data-role="err">Tato otázka je povinná</div>
-    </div>
-  </template>
-
-  <!-- Combo: radio OR text (mutually exclusive) -->
-  <template id="mc-or-text-template">
-    <div class="q-card" role="group" aria-labelledby="prompt">
-      <p class="q-prompt" id="prompt"></p>
-      <img class="q-image hidden" id="qimg" alt="Ilustrační obrázek" />
-      <ul class="options" id="options" style="margin-bottom:10px;"></ul>
-      <input class="textarea" id="comboInput" placeholder="(nebo napište text)..."
-             style="min-height:44px; height:44px; padding:10px;"></input>
-      <div class="error hidden" data-role="err">Vyberte možnost nebo napište text</div>
-    </div>
-  </template>
-
-  <!-- Multi-select + optional text -->
-  <template id="multi-or-text-template">
-    <div class="q-card" role="group" aria-labelledby="prompt">
-      <p class="q-prompt" id="prompt"></p>
-      <img class="q-image hidden" id="qimg" alt="Ilustrační obrázek" />
-      <ul class="options" id="options" style="margin-bottom:10px;"></ul>
-      <input class="textarea" id="freeInput" placeholder="(můžete doplnit vlastní text)…"
-             style="min-height:44px; height:44px; padding:10px;"></input>
-      <div class="error hidden" data-role="err">Vyberte alespoň jednu možnost nebo napište text</div>
-    </div>
-  </template>
-
-  <!-- Double text template (E-mail + Telefon) -->
-  <template id="double-template">
-    <div class="q-card" role="group" aria-labelledby="prompt">
-      <p class="q-prompt" id="prompt"></p>
-      <div class="double-wrap">
-        <div class="double-field">
-          <label class="double-label" id="label1"></label>
-          <input class="double-input" id="input1" />
-        </div>
-        <div class="double-field">
-          <label class="double-label" id="label2"></label>
-          <input class="double-input" id="input2" />
-        </div>
-      </div>
-      <div class="error hidden" data-role="err">Vyplňte prosím platný e-mail i telefon.</div>
-    </div>
-  </template>
-
-  <!-- Thank-you -->
-  <template id="done-template">
-    <div class="q-card">
-      <h2 class="q-prompt">Děkujeme za vyplnění. O nabídce Vás budeme informovat co nejdříve.</h2>
-    </div>
-  </template>
-
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
   <script>
-    const SURVEY_VERSION = 'v1.7';
-    const brandName = "Ecovis Facta a.s.";
-    const logoUrl = "https://cdn.brandfetch.io/ecovis.hn/fallback/lettermark/theme/dark/h/256/w/256/icon?c=1bfwsmEH20zzEfSNTed";
-    const backgroundImages = [];
+    emailjs.init('FZNVPdu8YkKVsmazN');
 
-    // Questions (with double input as #2 and NEW multi_or_text as #4)
-    const questions = [
-      { id:"q1",  prompt:"Název společnosti", type:"text" },
+    const prices = {A:1200,B:900,C:800};
+    const qtyInput = document.getElementById('qty');
+    const attendeesDiv = document.getElementById('attendees');
+    const qrDiv = document.getElementById('qrcode');
+    const qrHint = document.getElementById('qrHint');
 
-      // #2 – double inputs (email + phone)
-      {
-        id: "contact",
-        type: "double",
-        prompt: "Kontaktní údaje",
-        fields: [
-          { key: "email", label: "E-mail",   placeholder: "např. jmeno@firma.cz",     inputType: "email", required: true, validate: "email" },
-          { key: "phone", label: "Telefon",  placeholder: "např. +420 123 456 789",   inputType: "tel",   required: true, validate: "phone" }
-        ]
-      },
-
-      { id:"q2",  prompt:"Společnost je aktuálně:", type:"mc_or_text", options: ["Startup (fáze nápadu/vývoje)","Startup (fáze růstu)", "Fungující společnost (na trhu déle než 3 roky)","Freelancer / samostatně podnikající osoba"] },
-      { id:"q3",  prompt:"Předmět činnosti společnosti", type:"text" },
-
-      // #4 – NEW: multiple select + optional text
-      {
-        id: "services",
-        type: "multi_or_text",
-        prompt: "Hledáme poskytovatele služeb",
-        options: [
-          "Vedení účetnictví",
-          "Mzdová agenda",
-          "Daňové poradenství",
-          "Reporting a controlling",
-          "Právní služby",
-          "Audit",
-          "Transakční poradentví",
-          "Zpracování TP dokumentace",
-          "Cenové kalkulace",
-          "Due Dilligence"
-        ]
-      },
-
-      { id:"q4",  prompt:"Obrat (je-li znám) ROČNĚ", type:"text" },
-      { id:"q5",  prompt:"Účetní období", type:"mc", options:["kalendářní rok","hospodářský rok"] },
-
-      { id:"q6",  prompt:"Počet zápisů v účetním deníku - průměrně MĚSÍČNĚ", type:"text" },
-      { id:"q7",  prompt:"Máte vlastní účetní SW, který nadále chcete využívat? Pokud ano, jaký?", type:"mc_or_text", options:["NE"] },
-      { id:"q8",  prompt:"Jaký máte způsob účtování skladů", type:"mc_or_text", options: ["Sklady nemáme", "Metoda A", "Metoda B"] },
-
-      { id:"q9",  prompt:"Počet pohybů skladových položek (zboží, výrobky, materiál) - průměrně MĚSÍČNĚ", type:"text",
-        hiddenWhen: [ { type:"mcOrTextChoiceEquals", questionId:"q8", index: 0 } ] },
-      { id:"q10", prompt:"Počet přijatých faktur a účtenek - průměrně MĚSÍČNĚ", type:"text" },
-      { id:"q11", prompt:"Počet vydaných faktur - průměrně MĚSÍČNĚ", type:"text" },
-      { id: "qAdd", prompt: "Jakým způsobem vystavujete faktury?", type: "text" }, 
-      { id:"q12", prompt:"Počet položek hmotného majetku - CELKOVĚ", type:"text" },
-      { id:"q13", prompt:"Počet leasingových smluv - CELKOVĚ", type:"text" },
-      { id:"q14", prompt:"Počet úvěrových smluv - CELKOVĚ", type:"text" },  { id:"q15", prompt:"Počet bankovních účtů - CELKEM", type:"text" },
-      { id:"q16", prompt:"Máte účty i v zahraniční měně?", type:"mc", options: ["Ano", "Ne"] },
-      { id:"q19", prompt:"Kolik máte zaměstnanců?", type:"text" },
-      { id:"q20", prompt:"Máte vysokou fluktuaci (nástupy a výstupy každý měsíc)?", type:"text" },
-      { id:"q21", prompt:"Zaměstnáváte cizince?", type:"mc", options:["ANO","NE"] },
-      { id:"q22", prompt:"Kdo připravuje pracovní smlouvy a podklady pro zpracování mezd?", type:"text" },
-
-      { id:"q23", prompt:"Registrace k DPH", type:"mc", options: ["ANO","NE"] },
-      { id:"q24", prompt:"Podáváte Intrastat?", type:"mc", options:["ANO","NE"] },
-      { id:"q25", prompt:"Podáváte statistická hlášení?", type:"multi_or_text", options:["NE","měsíčně","kvartálně","ročně"] },
-      { id:"q26", prompt:"Podléháte povinému auditu?", type:"mc", options:["ANO","NE"] },
-      { id:"q27", prompt:"Vyžadujete zpracování a vyhodnocování reportů?", type:"mc", options:["NE","měsíčně","kvartálně","ročně"] },
-
-      { id:"q28", prompt:"Další informace a požadavky na účetní a daňové služby", type:"text" }
-    ];
-
-    const postEndpoint = 'https://script.google.com/macros/s/AKfycbzTSc4MYHlcfVfaABV2AHmtsM2jt7CvTiAUHo_t4GtJA3Qk98OBPFGCQkqxXOA2Ve0J/exec';
-
-    const state = { index: 0, answers: {}, done: false, meta: null, version: SURVEY_VERSION };
-
-    const els = {
-      logo: document.getElementById('logo'),
-      brandName: document.getElementById('brandName'),
-      bar: document.getElementById('bar'),
-      progressText: document.getElementById('progressText'),
-      percent: document.getElementById('percent'),
-      qMount: document.getElementById('questionMount'),
-      back: document.getElementById('backBtn'),
-      next: document.getElementById('nextBtn'),
-      save: document.getElementById('saveBtn')
-    };
-
-    /* ===== Validation helpers for double input ===== */
-    function isEmail(s) {
-      if (!s) return false;
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s).trim());
-    }
-    function isPhone(s) {
-      if (!s) return false;
-      const digits = String(s).replace(/[^\d]/g, '');
-      return digits.length >= 7;
-    }
-    function validateField(val, rule) {
-      if (rule?.required && (!val || String(val).trim() === "")) return false;
-      if (!val) return !rule?.required;
-      if (rule?.validate === 'email') return isEmail(val);
-      if (rule?.validate === 'phone') return isPhone(val);
-      return true;
+    function updateAttendeeBoxes(){
+      const count = parseInt(qtyInput.value||'0',10);
+      attendeesDiv.innerHTML='';
+      for(let i=1;i<=count;i++){
+        const box=document.createElement('div');
+        box.className='attendee-box';
+        box.innerHTML=`<label>Účastník ${i} – jméno</label><input type='text' name='attendee${i}' placeholder='Jméno účastníka ${i}' required>`;
+        attendeesDiv.appendChild(box);
+      }
     }
 
-    function init() {
-      els.logo.src = logoUrl;
-      els.brandName.textContent = brandName;
+    function calcTotal(){
+      const qty = parseInt(document.getElementById('qty').value||'0',10);
+      const lectures = Array.from(document.querySelectorAll('input[name="lectures"]:checked')).map(x=>x.value);
+      let sum=0; lectures.forEach(l=>sum+=prices[l]||0);
+      document.getElementById('total').textContent=(sum*qty).toLocaleString('cs-CZ')+' Kč';
+      return {total:sum*qty, lectures, qty};
+    }
 
-      els.back.addEventListener('click', onBack);
-      els.next.addEventListener('click', onNext);
-      els.save.addEventListener('click', onSave);
+    function buildQrPayload(amount, vs, msg){
+      const iban = "CZ7355000000005377695001";
+      const currency = "CZK";
+      return `SPD*1.0*ACC:${iban}*AM:${amount.toFixed(2)}*CC:${currency}*X-VS:${vs}*MSG:${encodeURIComponent(msg)}`;
+    }
 
-      const params = new URLSearchParams(location.search);
-      state.meta = {
-        customer: params.get('customer') || null,
-        id: params.get('id') || null,
-        email: params.get('email') || null,
-        token: params.get('t') || null
+    function generateQr(amount, vs, msg){
+      const payload = buildQrPayload(amount, vs, msg);
+      const url = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${payload}`;
+      qrDiv.innerHTML = `<img src='${url}' alt='QR Platba'>`;
+      return url;
+    }
+
+    qtyInput.addEventListener('input',()=>{updateAttendeeBoxes();calcTotal();});
+    document.querySelectorAll('input[name="lectures"]').forEach(cb=>cb.addEventListener('change',calcTotal));
+    updateAttendeeBoxes();
+
+    document.getElementById('regForm').addEventListener('submit', async function(e){
+      e.preventDefault();
+      const {total, lectures, qty}=calcTotal();
+      const company=document.getElementById('company').value;
+      const ico=document.getElementById('ico').value;
+      const email=document.getElementById('email').value;
+      const phone=document.getElementById('phone').value;
+      const comments=document.getElementById('comments').value||'-';
+      const msgText=`Školení ECOVIS – ${lectures.join(', ')} – ${company}`;
+      const qrUrl=generateQr(total, ico, msgText);
+
+      // Collect all attendee names
+      const attendeeInputs = attendeesDiv.querySelectorAll('input[name^="attendee"]');
+      const attendeeNames = Array.from(attendeeInputs)
+        .map((a,i) => `Účastník ${i+1}: ${a.value || '-'}`)
+        .join('\\n');
+
+      const data={
+        company,
+        email,
+        phone,
+        event_date:'',
+        lectures:lectures.join(', '),
+        attendees:String(qty),
+        attendee_names:attendeeNames,
+        comments,
+        amount:total+' Kč',
+        vs:ico,
+        qr_image_base64:qrUrl
       };
-
-      if (backgroundImages && backgroundImages.length) {
-        const chosen = backgroundImages[Math.floor(Math.random() * backgroundImages.length)];
-        document.documentElement.style.setProperty('--bg-image', `url('${chosen}')`);
-      }
-
-      render();
-    }
-
-    function onBack() {
-      if (state.index > 0) {
-        state.index = prevVisibleIndex(state.index);
-        render();
-      }
-    }
-
-    async function onNext() {
-      if (state.done) return restart();
-      if (!validateCurrent()) return;
-
-      if (state.index < questions.length - 1) {
-        const next = nextVisibleIndex(state.index);
-        if (next === state.index) {
-          await submit();
-          return;
-        }
-        state.index = next;
-        render();
-      } else {
-        await submit();
-      }
-    }
-
-    function onSave() {
-      localStorage.setItem('surveyState', JSON.stringify(state));
-      toast('Postup uložen do tohoto prohlížeče');
-    }
-
-    function restart() {
-      localStorage.removeItem('surveyState');
-      state.index = 0; state.answers = {}; state.done = false; state.version = SURVEY_VERSION;
-      render();
-    }
-
-    function validateCurrent() {
-      const q = questions[state.index];
-      if (isHidden(q)) return true;
-
-      const v = state.answers[q.id];
-      let ok = false;
-
-      if (q.type === 'text') {
-        ok = !!(v && String(v).trim());
-      } else if (q.type === 'mc') {
-        ok = Number.isInteger(v);
-      } else if (q.type === 'mc_or_text') {
-        ok = (v && typeof v === 'object' && (Number.isInteger(v.choiceIndex) || (v.text && v.text.trim().length>0)));
-      } else if (q.type === 'double') {
-        if (v && typeof v === 'object' && Array.isArray(q.fields) && q.fields.length === 2) {
-          const a = q.fields[0], b = q.fields[1];
-          ok = validateField(v[a.key], a) && validateField(v[b.key], b);
-        } else {
-          ok = false;
-        }
-      } else if (q.type === 'multi_or_text') {
-        // v = { indices:number[], options:string[], text:string }
-        if (v && typeof v === 'object') {
-          const hasAny = (Array.isArray(v.indices) && v.indices.length > 0) ||
-                         (v.text && String(v.text).trim().length > 0);
-          ok = !!hasAny;
-        } else {
-          ok = false;
-        }
-      }
-
-      const err = els.qMount.querySelector('[data-role="err"]');
-      if (err) err.classList.toggle('hidden', ok);
-      return ok;
-    }
-
-    /* ========= Skip-logic helpers ========= */
-    function isRuleMatched(rule) {
-      const ans = state.answers[rule.questionId];
-      switch (rule.type) {
-        case 'mcEquals': return Number.isInteger(ans) && ans === rule.index;
-        case 'textEquals':
-          return typeof ans === 'string'
-            && ans.trim().toLowerCase() === String(rule.value || '').trim().toLowerCase();
-        case 'textContains':
-          return typeof ans === 'string'
-            && ans.toLowerCase().includes(String(rule.value || '').toLowerCase());
-        case 'mcOrTextChoiceEquals':
-          return ans && typeof ans === 'object' && Number.isInteger(ans.choiceIndex)
-            && ans.choiceIndex === rule.index;
-        case 'mcOrTextHasText':
-          return ans && typeof ans === 'object' && ans.text && ans.text.trim().length > 0;
-        default: return false;
-      }
-    }
-    function isHidden(q) {
-      if (!q || !q.hiddenWhen || !Array.isArray(q.hiddenWhen)) return false;
-      return q.hiddenWhen.some(isRuleMatched);
-    }
-    function visibleQuestions() { return questions.filter(q => !isHidden(q)); }
-    function nextVisibleIndex(from) { for (let i=from+1;i<questions.length;i++) if (!isHidden(questions[i])) return i; return from; }
-    function prevVisibleIndex(from) { for (let i=from-1;i>=0;i--) if (!isHidden(questions[i])) return i; return from; }
-    /* ===================================== */
-
-    function setProgress() {
-      const vis = visibleQuestions();
-      const current = questions[state.index];
-      const visIndex = Math.max(0, vis.findIndex(q => q.id === current.id));
-      const pct = Math.round(((visIndex + 1) / Math.max(1, vis.length)) * 100);
-      els.bar.style.width = pct + '%';
-      els.progressText.textContent = `${visIndex + 1} z ${vis.length}`;
-      els.percent.textContent = pct + '%';
-    }
-
-    function render() {
-      if (isHidden(questions[state.index])) {
-        const next = nextVisibleIndex(state.index);
-        if (next !== state.index) state.index = next;
-      }
-
-      setProgress();
-      const mount = els.qMount;
-      mount.innerHTML = '';
-
-      if (state.done) {
-        const tpl = document.getElementById('done-template').content.cloneNode(true);
-        mount.appendChild(tpl);
-        els.back.style.display = 'none';
-        els.next.style.display = 'none';
-        els.save.style.display = 'none';
-        return;
-      } else {
-        els.back.style.display = '';
-        els.next.style.display = '';
-        els.save.style.display = '';
-      }
-
-      if (isHidden(questions[state.index])) {
-        const firstVisible = questions.findIndex(q => !isHidden(q));
-        state.index = firstVisible === -1 ? 0 : firstVisible;
-      }
-
-      els.back.disabled = prevVisibleIndex(state.index) === state.index;
-      els.next.textContent = (nextVisibleIndex(state.index) === state.index && state.index < questions.length - 1) ? 'Odeslat' :
-                             (state.index === questions.length - 1 ? 'Odeslat' : 'Další');
-
-      const q = questions[state.index];
-      const value = state.answers[q.id];
-
-      if (q.type === 'mc') {
-        const tpl = document.getElementById('mc-template').content.cloneNode(true);
-        tpl.getElementById('prompt').textContent = q.prompt;
-        const img = tpl.getElementById('qimg'); if (q.image) { img.src = q.image; img.classList.remove('hidden'); }
-        const ul = tpl.getElementById('options'); ul.innerHTML = '';
-
-        q.options.forEach((opt, i) => {
-          const li = document.createElement('li'); li.className = 'option';
-          const input = document.createElement('input');
-          input.type = 'radio'; input.name = q.id; input.value = String(i); input.checked = value === i;
-          input.setAttribute('aria-label', String.fromCharCode(65 + i) + '. ' + opt);
-          input.addEventListener('change', () => { state.answers[q.id] = i; els.next.disabled = false; render(); });
-
-          const badge = document.createElement('div'); badge.className = 'badge'; badge.textContent = String.fromCharCode(65 + i);
-          const label = document.createElement('label'); label.textContent = opt; label.style.flex = '1';
-
-          li.addEventListener('click', () => { input.checked = true; input.dispatchEvent(new Event('change')); });
-          li.appendChild(badge); li.appendChild(input); li.appendChild(label);
-          ul.appendChild(li);
-        });
-
-        mount.appendChild(tpl);
-      }
-      else if (q.type === 'text') {
-        const tpl = document.getElementById('text-template').content.cloneNode(true);
-        tpl.getElementById('prompt').textContent = q.prompt;
-        const img = tpl.getElementById('qimg'); if (q.image) { img.src = q.image; img.classList.remove('hidden'); }
-        const ta = tpl.getElementById('textInput');
-        ta.value = value || '';
-        ta.addEventListener('input', (e) => {
-          state.answers[q.id] = e.target.value;
-          els.next.disabled = !(e.target.value && String(e.target.value).trim());
-        });
-        mount.appendChild(tpl);
-      }
-      else if (q.type === 'mc_or_text') {
-        const tpl = document.getElementById('mc-or-text-template').content.cloneNode(true);
-        tpl.getElementById('prompt').textContent = q.prompt;
-        const ul = tpl.getElementById('options');
-        const inputBox = tpl.getElementById('comboInput');
-
-        let current = value && typeof value === 'object' ? value : {choiceIndex:null, option:null, text:''};
-
-        q.options.forEach((opt, i) => {
-          const li = document.createElement('li'); li.className = 'option';
-          const input = document.createElement('input');
-          input.type = 'radio'; input.name = q.id; input.value = String(i); input.checked = current.choiceIndex === i;
-          input.setAttribute('aria-label', String.fromCharCode(65 + i) + '. ' + opt);
-          input.addEventListener('change', () => {
-            current = { choiceIndex: i, option: opt, text: '' };
-            inputBox.value = '';
-            state.answers[q.id] = current;
-            els.next.disabled = false;
-            render(); // radios can change visibility immediately
-          });
-
-          const badge = document.createElement('div'); badge.className = 'badge'; badge.textContent = String.fromCharCode(65 + i);
-          const label = document.createElement('label'); label.textContent = opt; label.style.flex = '1';
-
-          li.addEventListener('click', () => { input.checked = true; input.dispatchEvent(new Event('change')); });
-          li.appendChild(badge); li.appendChild(input); li.appendChild(label);
-          ul.appendChild(li);
-        });
-
-        inputBox.value = current.text || '';
-        inputBox.addEventListener('input', (e) => {
-          const t = e.target.value || '';
-          if (t.trim().length > 0) {
-            current = { choiceIndex: null, option: null, text: t };
-            [...ul.querySelectorAll('input[type="radio"]')].forEach(r => r.checked = false);
-            state.answers[q.id] = current;
-            els.next.disabled = false;
-          } else {
-            const anyChecked = !!ul.querySelector('input[type="radio"]:checked');
-            state.answers[q.id] = anyChecked ? current : null;
-            els.next.disabled = !anyChecked;
-          }
-        });
-
-        mount.appendChild(tpl);
-      }
-      else if (q.type === 'multi_or_text') {
-        const tpl = document.getElementById('multi-or-text-template').content.cloneNode(true);
-        tpl.getElementById('prompt').textContent = q.prompt;
-        const img = tpl.getElementById('qimg'); if (q.image) { img.src = q.image; img.classList.remove('hidden'); }
-        const ul = tpl.getElementById('options');
-        const inputBox = tpl.getElementById('freeInput');
-
-        // normalize value
-        let current = (value && typeof value === 'object')
-          ? { indices: Array.isArray(value.indices) ? value.indices.slice() : [],
-              options: Array.isArray(value.options) ? value.options.slice() : [],
-              text: value.text || '' }
-          : { indices: [], options: [], text: '' };
-
-        q.options.forEach((opt, i) => {
-          const li = document.createElement('li'); li.className = 'option';
-
-          const input = document.createElement('input');
-          input.type = 'checkbox';
-          input.name = q.id;
-          input.value = String(i);
-          input.checked = current.indices.includes(i);
-          input.setAttribute('aria-label', String.fromCharCode(65 + i) + '. ' + opt);
-
-          input.addEventListener('change', () => {
-            if (input.checked) {
-              if (!current.indices.includes(i)) {
-                current.indices.push(i);
-                current.options.push(opt);
-              }
-            } else {
-              const idx = current.indices.indexOf(i);
-              if (idx >= 0) current.indices.splice(idx, 1);
-              const oidx = current.options.indexOf(opt);
-              if (oidx >= 0) current.options.splice(oidx, 1);
-            }
-            state.answers[q.id] = current;
-            els.next.disabled = !validateCurrent();
-          });
-
-          const badge = document.createElement('div'); badge.className = 'badge';
-          badge.textContent = String.fromCharCode(65 + i);
-
-          const label = document.createElement('label'); label.textContent = opt; label.style.flex = '1';
-
-          li.addEventListener('click', (ev) => {
-            if (ev.target !== input) { input.checked = !input.checked; input.dispatchEvent(new Event('change')); }
-          });
-
-          li.appendChild(badge);
-          li.appendChild(input);
-          li.appendChild(label);
-          ul.appendChild(li);
-        });
-
-        inputBox.value = current.text || '';
-        inputBox.addEventListener('input', (e) => {
-          current.text = e.target.value || '';
-          state.answers[q.id] = current;
-          els.next.disabled = !validateCurrent();
-        });
-
-        mount.appendChild(tpl);
-      }
-      else if (q.type === 'double') {
-        const tpl = document.getElementById('double-template').content.cloneNode(true);
-        tpl.getElementById('prompt').textContent = q.prompt;
-
-        const current = (value && typeof value === 'object') ? value : {};
-        const fields = Array.isArray(q.fields) ? q.fields.slice(0,2) : [];
-        const [f1, f2] = fields;
-
-        const label1 = tpl.getElementById('label1');
-        const label2 = tpl.getElementById('label2');
-        const input1 = tpl.getElementById('input1');
-        const input2 = tpl.getElementById('input2');
-
-        // Field 1
-        label1.textContent = f1?.label || 'Pole 1';
-        input1.type = f1?.inputType || 'text';
-        input1.placeholder = f1?.placeholder || '';
-        input1.value = current[f1?.key] || '';
-        input1.autocomplete = (f1?.inputType === 'email') ? 'email' : (f1?.inputType === 'tel') ? 'tel' : 'on';
-        input1.addEventListener('input', (e) => {
-          state.answers[q.id] = Object.assign({}, state.answers[q.id], { [f1.key]: e.target.value });
-          els.next.disabled = !validateCurrent();
-        });
-
-        // Field 2
-        label2.textContent = f2?.label || 'Pole 2';
-        input2.type = f2?.inputType || 'text';
-        input2.placeholder = f2?.placeholder || '';
-        input2.value = current[f2?.key] || '';
-        input2.autocomplete = (f2?.inputType === 'email') ? 'email' : (f2?.inputType === 'tel') ? 'tel' : 'on';
-        input2.addEventListener('input', (e) => {
-          state.answers[q.id] = Object.assign({}, state.answers[q.id], { [f2.key]: e.target.value });
-          els.next.disabled = !validateCurrent();
-        });
-
-        mount.appendChild(tpl);
-      }
-
-      // set button disabled according to validation
-      els.next.disabled = !validateCurrent();
-    }
-
-    async function submit() {
-      // guard: prevent double-clicks during submission
-      els.next.disabled = true;
-
-      const payload = buildPayload();
-      // add a client idempotency key
-      payload.meta = payload.meta || {};
-      payload.meta.idempotency_key = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random();
-
-      const body = JSON.stringify(payload);
 
       try {
-        await fetch(postEndpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' }, // simple request (no preflight)
-          body
+        await emailjs.send('service_2udpiju','template_zyyq9yf',{
+          ...data,
+          reply_to:email,
+          cc_email:'frantisek.fiala@ecovis.cz'
         });
-      } catch (err) {
-        console.warn('Fetch failed (likely CORS). Not retrying to avoid duplicates.', err);
+        document.getElementById('msg').textContent='Přihláška odeslána. Potvrzení bylo zasláno na '+email;
+        document.getElementById('msg').className='ok';
+        qrDiv.style.display='block';
+        qrHint.style.display='block';
+      } catch(err){
+        console.error(err);
+        document.getElementById('msg').textContent='Chyba při odesílání e-mailu.';
+        document.getElementById('msg').className='err';
       }
-
-      state.done = true;
-      render();
-    }
-
-    function buildPayload() {
-      const answers = {};
-      for (const q of questions) {
-        let v = state.answers[q.id];
-        if (q.type === 'mc' && Number.isInteger(v)) v = { index: v, option: q.options[v] };
-        // mc_or_text keeps its object; multi_or_text keeps {indices, options, text}; double keeps {email, phone}
-        answers[q.id] = v ?? null;
-      }
-      return {
-        brand: brandName,
-        version: SURVEY_VERSION,
-        timestamp: new Date().toISOString(),
-        meta: state.meta || null,
-        answers
-      };
-    }
-
-    function toast(msg) {
-      const el = document.createElement('div');
-      el.textContent = msg;
-      el.style.position = 'fixed';
-      el.style.bottom = '24px';
-      el.style.left = '50%';
-      el.style.transform = 'translateX(-50%)';
-      el.style.background = 'rgba(17,24,39,0.9)';
-      el.style.border = '1px solid rgba(255,255,255,0.12)';
-      el.style.color = 'white';
-      el.style.padding = '10px 14px';
-      el.style.borderRadius = '12px';
-      el.style.boxShadow = '0 8px 24px rgba(0,0,0,0.35)';
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 1800);
-    }
-
-    init();
+    });
   </script>
 </body>
 </html>
