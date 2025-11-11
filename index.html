@@ -54,59 +54,11 @@
       <!-- 1) Přednášky nahoře + termíny -->
       <fieldset>
         <legend>Výběr přednášek a termínů</legend>
-
-        <div class="grid-2">
-          <label class="checkline">
-            <input type="checkbox" name="lectures" value="A">
-            <span>
-              <strong>Přednáška A – Daňové novinky 2025</strong>
-              <span class="hint">cena 1200 Kč / osoba</span>
-              <span class="muted-line">Termín:
-                <select id="dateA" class="inline">
-                  <option value="">Vyberte termín</option>
-                  <option>01.12.2025</option>
-                  <option>15.12.2025</option>
-                  <option>10.01.2026</option>
-                </select>
-              </span>
-            </span>
-          </label>
-
-          <label class="checkline">
-            <input type="checkbox" name="lectures" value="B">
-            <span>
-              <strong>Přednáška B – Digitalizace účetnictví</strong>
-              <span class="hint">cena 900 Kč / osoba</span>
-              <span class="muted-line">Termín:
-                <select id="dateB" class="inline">
-                  <option value="">Vyberte termín</option>
-                  <option>02.12.2025</option>
-                  <option>16.12.2025</option>
-                  <option>11.01.2026</option>
-                </select>
-              </span>
-            </span>
-          </label>
-
-          <label class="checkline">
-            <input type="checkbox" name="lectures" value="C">
-            <span>
-              <strong>Přednáška C – Personalistika v praxi</strong>
-              <span class="hint">cena 800 Kč / osoba</span>
-              <span class="muted-line">Termín:
-                <select id="dateC" class="inline">
-                  <option value="">Vyberte termín</option>
-                  <option>03.12.2025</option>
-                  <option>17.12.2025</option>
-                  <option>12.01.2026</option>
-                </select>
-              </span>
-            </span>
-          </label>
-        </div>
+        <legend id="priceLegend">CENÍK: 1 = 1650 Kč, 2 = 3100 Kč, 3 = 4500 Kč (na osobu)</legend>
+        <div class="grid-2" id="lecturesContainer"></div>
       </fieldset>
 
-      <!-- 2) Firma a kontakt (DIČ/Sídlo skryto, ale pošleme v e-mailu) -->
+      <!-- 2) Firma a kontakt -->
       <fieldset>
         <legend>Firma a kontakt</legend>
         <div class="grid-2">
@@ -121,14 +73,13 @@
         </div>
 
         <label>Název společnosti*</label>
-        <input type="text" id="company" required placeholder="ECOVIS FACTA a.s.">
+        <input type="text" id="company" required placeholder="Firma s.r.o.">
 
-        <!-- skrytá systémová pole jen pro JS (neukazují se, ale hodnoty posíláme e-mailem) -->
         <input type="hidden" id="hidDic" />
         <input type="hidden" id="hidAddress" />
 
         <label>Telefon*</label>
-        <input type="tel" id="phone" required placeholder="+420 777 000 000">
+        <input type="tel" id="phone" required placeholder="+420 777 888 999">
 
         <p id="aresMsg" class="hint"></p>
       </fieldset>
@@ -146,7 +97,12 @@
         <legend>Další požadavky</legend>
         <label>Komentáře a požadavky</label>
         <textarea id="comments"></textarea>
-        <label class="checkline"><input type="checkbox" id="gdpr" required><span>Souhlasím se zpracováním osobních údajů<span class="hint"> pro účely registrace a fakturace</span></span></label>
+        <label class="checkline">
+          <input type="checkbox" id="gdpr" required>
+          <span>Souhlasím se zpracováním osobních údajů
+            <span class="hint"> pro účely registrace a fakturace</span>
+          </span>
+        </label>
       </fieldset>
 
       <p><strong>Celkem k úhradě:</strong> <span id="total">0 Kč</span></p>
@@ -161,22 +117,104 @@
 
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
   <script>
-    /* KONFIGURACE */
-    emailjs.init('FZNVPdu8YkKVsmazN'); // Public key
-    const prices = {A:1200, B:900, C:800};
+    /* KONFIGURACE NA JEDNOM MÍSTĚ */
+    const CONFIG = {
+      pricing: {
+        1: 1650,
+        2: 3100,
+        3: 4500
+      },
+      iban: "CZ7355000000005377695001",
+      currency: "CZK",
+      qrSize: "200x200",
+      aresBase: "/api/ares?ico=",
+      emailJsPublicKey: "FZNVPdu8YkKVsmazN",
+      emailServiceId: "service_2udpiju",
+      emailTemplateId: "template_zyyq9yf",
+      ccEmail: "tereza.prochazkova@ecovis.cz", 
+      lectures: [
+        {
+          id: "A",
+          title: "Pracovní doba, dovolená a docházky – pro zaměstnavatele",
+          description: "Pojmy, všeobecná pravidla, povinnosti, chyby zaměstnavatelů, rozvrh pracovní doby, změny dle novely ZP",
+          selectId: "dateA",
+          dates: [
+            "10.12.2025, 9:00 - 12:00"
+          ]
+        },
+        {
+          id: "B",
+          title: "Roční zúčtování daně 2025 z pohledu personalisty",
+          description: "Povinnosti zaměstnanců a zaměstnavatele, návod na vyplnění formulářů, postup při RZD, daňové rezidenství, uplatnění dětí",
+          selectId: "dateB",
+          dates: [
+            "17.12.2025, 9:00 - 12:00"
+          ]
+        },
+        {
+          id: "C",
+          title: "Jednotné měsíční hlášení (JMHZ) z pohledu HR + náhled do změn v roce 2026",
+          description: "Co je JMHZ, evidence zaměstnavatele a nové povinnosti, registrace zaměstnanců; přehled legislativních změn 2026, nové hodnoty a limity pro výpočty mezd",
+          selectId: "dateC",
+          dates: [
+            "17.12.2025, 12:30 - 15:30"
+          ]
+        }
+      ]
+    };
 
-    // ARES přes vaši proxy na stejné doméně (žádné CORS)
-    let ARES_BASE = '/api/ares?ico=';
+    /* INIT EMAILJS */
+    emailjs.init(CONFIG.emailJsPublicKey);
 
+    /* DOM REFS */
     const qtyInput = document.getElementById('qty');
     const attendeesDiv = document.getElementById('attendees');
     const qrDiv = document.getElementById('qrcode');
     const qrHint = document.getElementById('qrHint');
     const aresMsg = document.getElementById('aresMsg');
+    const lecturesContainer = document.getElementById('lecturesContainer');
+    const priceLegend = document.getElementById('priceLegend');
 
-    // interní proměnné pro ARES (neukazujeme ve formuláři)
+    // ARES URL
+    let ARES_BASE = CONFIG.aresBase;
+
+    // interní proměnné pro ARES
     let aresDic = '';
     let aresAddress = '';
+
+    /* DYNAMICKÉ VYKRESLENÍ PŘEDNÁŠEK */
+    function renderLectures() {
+      lecturesContainer.innerHTML = '';
+      CONFIG.lectures.forEach(lec => {
+        const label = document.createElement('label');
+        label.className = 'checkline';
+        label.innerHTML = `
+          <input type="checkbox" name="lectures" value="${lec.title}">
+          <span>
+            <strong>${lec.title}</strong>
+            <span class="hint">${lec.description}</span>
+            <span class="muted-line">Termín:
+              <select id="${lec.selectId}" class="inline">
+                <option value="">Vyberte termín</option>
+                ${lec.dates.map(d => `<option>${d}</option>`).join('')}
+              </select>
+            </span>
+          </span>
+        `;
+        lecturesContainer.appendChild(label);
+      });
+
+      // Eventy pro checkboxy po vykreslení
+      document.querySelectorAll('input[name="lectures"]').forEach(cb =>
+        cb.addEventListener('change', calcTotal)
+      );
+    }
+
+    // Nastavení textu ceníku z CONFIG
+    if (priceLegend) {
+      priceLegend.textContent =
+        `CENÍK: 1 = ${CONFIG.pricing[1]} Kč, 2 = ${CONFIG.pricing[2]} Kč, 3 = ${CONFIG.pricing[3]} Kč (na osobu)`;
+    }
 
     /* Účastníci */
     function updateAttendeeBoxes(){
@@ -191,28 +229,34 @@
     }
 
     /* Cena */
+    function getPricePerPerson(lecturesCount) {
+      return CONFIG.pricing[lecturesCount] || 0;
+    }
+
     function calcTotal(){
       const qty = parseInt(document.getElementById('qty').value || '0', 10);
       const lectures = Array.from(document.querySelectorAll('input[name="lectures"]:checked')).map(x => x.value);
-      let sum = 0; lectures.forEach(l => sum += prices[l] || 0);
-      document.getElementById('total').textContent = (sum * qty).toLocaleString('cs-CZ') + ' Kč';
-      return { total: sum * qty, lectures, qty };
+
+      const pricePerPerson = getPricePerPerson(lectures.length);
+      const total = pricePerPerson * qty;
+
+      document.getElementById('total').textContent = total.toLocaleString('cs-CZ') + ' Kč';
+      return { total, lectures, qty };
     }
 
     /* QR Platba SPD 1.0 */
     function buildQrPayload(amount, vs, msg){
-      const iban = "CZ7355000000005377695001";
-      const currency = "CZK";
-      return `SPD*1.0*ACC:${iban}*AM:${amount.toFixed(2)}*CC:${currency}*X-VS:${vs}*MSG:${encodeURIComponent(msg)}`;
+      return `SPD*1.0*ACC:${CONFIG.iban}*AM:${amount.toFixed(2)}*CC:${CONFIG.currency}*X-VS:${vs}*MSG:${encodeURIComponent(msg)}`;
     }
+
     function generateQr(amount, vs, msg){
       const payload = buildQrPayload(amount, vs, msg);
-      const url = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${payload}`;
+      const url = `https://api.qrserver.com/v1/create-qr-code/?size=${CONFIG.qrSize}&data=${payload}`;
       qrDiv.innerHTML = `<img src="${url}" alt="QR Platba">`;
       return url;
     }
 
-    /* ARES autofill přes vaši proxy */
+    /* ARES autofill přes proxy */
     function pickObchodniJmeno(es) {
       const name = es?.obchodniJmeno;
       if (!name) return '';
@@ -223,6 +267,7 @@
       }
       return '';
     }
+
     function formatAdresa(a) {
       if (!a) return '';
       if (a.textovaAdresa) return a.textovaAdresa;
@@ -232,6 +277,7 @@
       return [a.nazevUlice, cislo, a.nazevCastiObce, [psc, a.nazevObce].filter(Boolean).join(' ')]
         .filter(Boolean).join(', ');
     }
+
     function parseAresResponse(json) {
       const es = json || {};
       const firma = pickObchodniJmeno(es);
@@ -239,6 +285,7 @@
       const dic = es.dic || '';
       return { firma, adresa, dic };
     }
+
     async function fetchAresByICO(icoRaw) {
       const ico = (icoRaw || '').replace(/\D/g, '');
       if (!/^\d{8}$/.test(ico)) throw new Error('Neplatné IČO, očekáváno 8 číslic.');
@@ -252,6 +299,7 @@
     const icoInput = document.getElementById('ico');
     icoInput.addEventListener('change', tryAres);
     icoInput.addEventListener('blur', tryAres);
+
     async function tryAres() {
       const v = icoInput.value.trim();
       if (!v) return;
@@ -261,7 +309,6 @@
         if (firma) document.getElementById('company').value = firma;
         aresDic = dic || '';
         aresAddress = adresa || '';
-        // zapíšeme i do hidden polí pro jistotu debug/odezvu
         document.getElementById('hidDic').value = aresDic;
         document.getElementById('hidAddress').value = aresAddress;
         aresMsg.textContent = 'Údaje doplněny z ARES.';
@@ -272,9 +319,11 @@
     }
 
     /* Init */
-    qtyInput.addEventListener('input', () => { updateAttendeeBoxes(); calcTotal(); });
-    document.querySelectorAll('input[name="lectures"]').forEach(cb => cb.addEventListener('change', calcTotal));
+    renderLectures();
     updateAttendeeBoxes();
+    calcTotal();
+
+    qtyInput.addEventListener('input', () => { updateAttendeeBoxes(); calcTotal(); });
 
     /* Odeslání */
     document.getElementById('regForm').addEventListener('submit', async function(e){
@@ -287,23 +336,26 @@
       const comments = document.getElementById('comments').value || '-';
 
       const lectureDates = [];
-      if (lectures.includes('A')) lectureDates.push(`A: ${document.getElementById('dateA').value || '-'}`);
-      if (lectures.includes('B')) lectureDates.push(`B: ${document.getElementById('dateB').value || '-'}`);
-      if (lectures.includes('C')) lectureDates.push(`C: ${document.getElementById('dateC').value || '-'}`);
+      CONFIG.lectures.forEach(lec => {
+        if (lectures.includes(lec.title)) {
+          const dateVal = document.getElementById(lec.selectId).value || '-';
+          lectureDates.push(`${lec.title}: ${dateVal}`);
+        }
+      });
 
       const msgText = `Školení ECOVIS – ${lectures.join(', ')} – ${company}`;
       const qrUrl = generateQr(total, ico, msgText);
 
       const attendeeInputs = attendeesDiv.querySelectorAll('input[name^="attendee"]');
-      const attendeeNames = Array.from(attendeeInputs).map((a,i)=>`Účastník ${i+1}: ${a.value || '-'}`).join('\n');
+      const attendeeNames = Array.from(attendeeInputs)
+        .map((a,i)=>`Účastník ${i+1}: ${a.value || '-'}`)
+        .join('\n');
 
       const data = {
         company,
         ico,
-        // tyto dvě NEJSOU ve formuláři, ale posíláme je v e-mailu
         ares_dic: aresDic,
         ares_address: aresAddress,
-
         email,
         phone,
         event_date: lectureDates.join(', '),
@@ -317,10 +369,10 @@
       };
 
       try {
-        await emailjs.send('service_2udpiju','template_zyyq9yf', {
+        await emailjs.send(CONFIG.emailServiceId, CONFIG.emailTemplateId, {
           ...data,
           reply_to: email,
-          cc_email: 'frantisek.fiala@ecovis.cz'
+          cc_email: CONFIG.ccEmail
         });
         document.getElementById('msg').textContent = 'Přihláška odeslána. Potvrzení bylo zasláno na ' + email;
         document.getElementById('msg').className = 'ok';
